@@ -30,6 +30,7 @@
 
     <string name="mapview_button">MapView</string>
     <string name="history">history</string>
+    <string name="clear_history">Clear History</string>
    
 
 </resources>

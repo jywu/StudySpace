@@ -21,7 +21,6 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_margin="3dp"
             android:background="@color/lightblue"
             android:clickable="true"
@@ -30,6 +29,7 @@
             android:textColor="@color/white"
             android:textSize="15sp"
             android:textStyle="bold" />
+
     </LinearLayout>
 
     <EditText
