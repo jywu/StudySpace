@@ -68,6 +68,7 @@ public class SearchActivity extends Activity {
 	public static double longitude = 0;
 	private Button mFavoritesButton;
 	private Button mSearchButton;
+	private Button mHistoryButton;
 	
 	Boolean isInternetPresent = false;
 
@@ -175,7 +176,11 @@ public class SearchActivity extends Activity {
 				showDialog(DATE_DIALOG_ID);
 			}
 		});
-
+	}
+	
+	public void onHistoryButtonClick(View view) {
+	    Intent intent = new Intent(this, HistoryActivity.class);
+	    startActivity(intent);
 	}
 
 	@Override
@@ -622,6 +627,7 @@ public class SearchActivity extends Activity {
 		// General:
 		mSearchButton = (Button)findViewById(R.id.searchButton);
 		mFavoritesButton = (Button)findViewById(R.id.favoritesButton);
+		mHistoryButton = (Button)findViewById(R.id.historyButton);
 		mNumberOfPeopleTextView = (TextView)findViewById(R.id.numberOfPeopleTextView);
 		mNumberOfPeopleSlider = (SeekBar)findViewById(R.id.numberOfPeopleSlider);
 		mPrivateCheckBox = (CheckBox)findViewById(R.id.privateCheckBox);

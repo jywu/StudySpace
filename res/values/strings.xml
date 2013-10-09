@@ -29,6 +29,7 @@
     <string name="Edit">Edit</string>
 
     <string name="mapview_button">MapView</string>
+    <string name="history">history</string>
    
 
 </resources>
