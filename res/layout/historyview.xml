@@ -18,7 +18,7 @@
             android:src="@drawable/icon_history" />
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/clearHistory"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -54,13 +54,13 @@
                 android:gravity="center"
                 android:onClick="onFavClick"
                 android:padding="10dp"
-                android:text="@string/favorites_button"
-                android:textColor="@color/black"
+                android:text="@string/statistics"
+                android:textColor="@color/white"
                 android:textSize="18dp"
                 android:textStyle="bold" />
 
             <ImageView
-                android:id="@+id/favorite_button"
+                android:id="@+id/statistics_button"
                 android:layout_width="fill_parent"
                 android:layout_height="3dp"
                 android:background="@color/yellow" />
