@@ -6,9 +6,13 @@ import java.util.Locale;
 
 import edu.upenn.cis573.R;
 
+import Database.DBHelper;
+import Database.DBManager;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +32,7 @@ public class TabDetails extends Fragment {
 	private View fav;
 	private View unfav;
 	private Date begin;
+	private DBHelper dbHelper;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,6 +40,7 @@ public class TabDetails extends Fragment {
 		View view = inflater.inflate(R.layout.tabdetails, container, false);
 		return view;
 	}
+	 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -238,7 +244,9 @@ public class TabDetails extends Fragment {
 		if(k!=null) {
 			startActivity(k);
 		}
-
+		
+		
+		
 		final Intent calIntent = getCalIntent(v);
 		final Intent sendIntent = getTextIntent(v);
 
@@ -285,6 +293,13 @@ public class TabDetails extends Fragment {
 		}
 
 	}
+	
+	@Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        dbHelper = new DBHelper(activity);
+    }
+	
 	public void onCalClick(View v){
 
 		final Intent calIntent = getCalIntent(v);
