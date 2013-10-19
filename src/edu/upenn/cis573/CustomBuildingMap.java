@@ -29,219 +29,230 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+/**
+ * The CustomBuildingMap class maps a list of StudySpace locations 
+ * using the Google Maps API and an ArrayList of StudySpace objects 
+ * that it is passed from the StudySpaceListActivity class.
+ */
 public class CustomBuildingMap extends MapActivity {
 
-	LinearLayout linearLayout;
-	MapView mapView;
-	MapController mc;
-	GeoPoint p;
-	GeoPoint q;
-	GeoPoint avg;
-	Drawable drawableRed, drawableBlue;
-	Preferences pref;
-	private ArrayList<StudySpace> olist;
-	
-	Boolean isInternetPresent = false;
+    LinearLayout linearLayout;
+    MapView mapView;
+    MapController mc;
+    GeoPoint p;
+    GeoPoint q;
+    GeoPoint avg;
+    Drawable drawableRed, drawableBlue;
+    Preferences pref;
+    private ArrayList<StudySpace> olist;
+    
+    Boolean isInternetPresent = false;
 
-	// Connection detector class
-	ConnectionDetector cd;
+    // Connection detector class
+    ConnectionDetector cd;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Intent i = super.getIntent();
-		pref = (Preferences) i.getSerializableExtra("PREFERENCES");
-		olist = (ArrayList<StudySpace>) i.getSerializableExtra("STUDYSPACELIST");
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent i = super.getIntent();
+        pref = (Preferences) i.getSerializableExtra("PREFERENCES");
+        olist = (ArrayList<StudySpace>) i.getSerializableExtra("STUDYSPACELIST");
 
-		cd = new ConnectionDetector(getApplicationContext());
+        cd = new ConnectionDetector(getApplicationContext());
 
-		// get Internet status
-		isInternetPresent = cd.isConnectingToInternet();
+        // get Internet status
+        isInternetPresent = cd.isConnectingToInternet();
 
-		// check for Internet status
-		if (isInternetPresent) {
-			setContentView(R.layout.buildingmapview);
-			mapView = (MapView) findViewById(R.id.mapview);
-			mapView.setBuiltInZoomControls(true);
+        // check for Internet status
+        if (isInternetPresent) {
+            setContentView(R.layout.buildingmapview);
+            mapView = (MapView) findViewById(R.id.mapview);
+            mapView.setBuiltInZoomControls(true);
 
-			drawableBlue = this.getResources().getDrawable(R.drawable.pushpin_blue);
-			drawableRed = this.getResources().getDrawable(R.drawable.pushpin_red);
-			
-			int clat = 0;
-			int clon = 0;
-			int cnt = 0;
+            drawableBlue = this.getResources().getDrawable(R.drawable.pushpin_blue);
+            drawableRed = this.getResources().getDrawable(R.drawable.pushpin_red);
+            
+            int clat = 0;
+            int clon = 0;
+            int cnt = 0;
 
-			LocationManager locationManager = (LocationManager) this
-					.getSystemService(Context.LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) this
+                    .getSystemService(Context.LOCATION_SERVICE);
 
-			Criteria _criteria = new Criteria();
+            Criteria _criteria = new Criteria();
 
-			String _bestProvider = locationManager.getBestProvider(_criteria, true);
-			Location location = locationManager.getLastKnownLocation(_bestProvider);
+            String _bestProvider = locationManager.getBestProvider(_criteria, true);
+            Location location = locationManager.getLastKnownLocation(_bestProvider);
 
-			LocationListener loc_listener = new LocationListener() {
-				public void onLocationChanged(Location l) {
-				}
+            LocationListener loc_listener = new LocationListener() {
+                public void onLocationChanged(Location l) {
+                }
 
-				public void onProviderEnabled(String p) {
-				}
+                public void onProviderEnabled(String p) {
+                }
 
-				public void onProviderDisabled(String p) {
-				}
+                public void onProviderDisabled(String p) {
+                }
 
-				public void onStatusChanged(String p, int status, Bundle extras) {
-				}
-			};
-			locationManager.requestLocationUpdates(_bestProvider, 0, 0,
-					loc_listener);
-			location = locationManager.getLastKnownLocation(_bestProvider);
+                public void onStatusChanged(String p, int status, Bundle extras) {
+                }
+            };
+            locationManager.requestLocationUpdates(_bestProvider, 0, 0,
+                    loc_listener);
+            location = locationManager.getLastKnownLocation(_bestProvider);
 
-			if (location != null) {
-				double gpsLat = location.getLatitude();
-				double gpsLong = location.getLongitude();
+            if (location != null) {
+                double gpsLat = location.getLatitude();
+                double gpsLong = location.getLongitude();
 
-				q = new GeoPoint((int) (gpsLat * 1E6), (int) (gpsLong * 1E6));
-				clat += q.getLatitudeE6();
-				clon += q.getLongitudeE6();
-				++cnt;
+                q = new GeoPoint((int) (gpsLat * 1E6), (int) (gpsLong * 1E6));
+                clat += q.getLatitudeE6();
+                clon += q.getLongitudeE6();
+                ++cnt;
 
-				OverlayItem overlayitem = new OverlayItem(q, "", "");
-				PinOverlay pinsBlue = new PinOverlay(drawableBlue);
-				pinsBlue.addOverlay(overlayitem, null);
-				mapView.getOverlays().add(pinsBlue);
-			}
+                OverlayItem overlayitem = new OverlayItem(q, "", "");
+                PinOverlay pinsBlue = new PinOverlay(drawableBlue);
+                pinsBlue.addOverlay(overlayitem, null);
+                mapView.getOverlays().add(pinsBlue);
+            }
 
-			PinOverlay pinsRed = new PinOverlay(drawableRed);
-			Set<String> buildings = new HashSet<String>();
-			for (StudySpace o: olist)
-				buildings.add(o.getBuildingName());
-			for (String buildingName : buildings) {
-				ArrayList<StudySpace> rooms = new ArrayList<StudySpace>();
-				for (StudySpace o: olist) {
-					if (o.getBuildingName().equals(buildingName)) {
-						rooms.add(o);
-					}
-				}
-				double longitude = rooms.get(0).getSpaceLongitude();
-				double latitude = rooms.get(0).getSpaceLatitude();
-				p = new GeoPoint((int) (latitude * 1E6), (int) (longitude * 1E6));
-				clat += p.getLatitudeE6();
-				clon += p.getLongitudeE6();
-				++cnt;
-				OverlayItem overlayitem = new OverlayItem(p, "", "");
-				pinsRed.addOverlay(overlayitem, new Building(rooms));
-	
-//				avgLong += longitude;
-//				avgLat += latitude;
-			}
-			mapView.getOverlays().add(pinsRed);
+            PinOverlay pinsRed = new PinOverlay(drawableRed);
+            Set<String> buildings = new HashSet<String>();
+            for (StudySpace o: olist)
+                buildings.add(o.getBuildingName());
+            for (String buildingName : buildings) {
+                ArrayList<StudySpace> rooms = new ArrayList<StudySpace>();
+                for (StudySpace o: olist) {
+                    if (o.getBuildingName().equals(buildingName)) {
+                        rooms.add(o);
+                    }
+                }
+                double longitude = rooms.get(0).getSpaceLongitude();
+                double latitude = rooms.get(0).getSpaceLatitude();
+                p = new GeoPoint((int) (latitude * 1E6), (int) (longitude * 1E6));
+                clat += p.getLatitudeE6();
+                clon += p.getLongitudeE6();
+                ++cnt;
+                OverlayItem overlayitem = new OverlayItem(p, "", "");
+                pinsRed.addOverlay(overlayitem, new Building(rooms));
+    
+//              avgLong += longitude;
+//              avgLat += latitude;
+            }
+            mapView.getOverlays().add(pinsRed);
 
-			clat /= cnt;
-			clon /= cnt;
-			GeoPoint center = new GeoPoint(clat, clon);
-			mc = mapView.getController();
-			mc.animateTo(center);
-			mc.setZoom(17);
-		} else {
-			// Internet connection is not present
-			// Ask user to connect to Internet
-			cd.showAlertDialog(CustomBuildingMap.this, "No Internet Connection",
-					"You don't have internet connection.", false);
-		}
+            clat /= cnt;
+            clon /= cnt;
+            GeoPoint center = new GeoPoint(clat, clon);
+            mc = mapView.getController();
+            mc.animateTo(center);
+            mc.setZoom(17);
+        } else {
+            // Internet connection is not present
+            // Ask user to connect to Internet
+            cd.showAlertDialog(CustomBuildingMap.this, "No Internet Connection",
+                    "You don't have internet connection.", false);
+        }
 
-	}
+    }
 
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
-	}
-	public class PinOverlay extends ItemizedOverlay<OverlayItem>{
+    @Override
+    protected boolean isRouteDisplayed() {
+        return false;
+    }
+    
+    /**
+     * The PinOverlay class is a private inner class that actually adds 
+     * the pins on the map with listeners to display an alert dialog with 
+     * more information about the study space when a user clicks on it.
+     */
+    public class PinOverlay extends ItemizedOverlay<OverlayItem>{
 
-		private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
-		private ArrayList<Building> mBuildings = new ArrayList<Building>();
-		
-		public PinOverlay(Drawable defaultMarker) {
-			super(boundCenterBottom(defaultMarker));
-		}
+        private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+        private ArrayList<Building> mBuildings = new ArrayList<Building>();
+        
+        public PinOverlay(Drawable defaultMarker) {
+            super(boundCenterBottom(defaultMarker));
+        }
 
-		public void addOverlay(OverlayItem overlay, Building building) {
-			mOverlays.add(overlay);
-			mBuildings.add(building);
-			populate();
-		}
+        public void addOverlay(OverlayItem overlay, Building building) {
+            mOverlays.add(overlay);
+            mBuildings.add(building);
+            populate();
+        }
 
-		@Override
-		protected OverlayItem createItem(int i) {
-			return mOverlays.get(i);
-		}
+        @Override
+        protected OverlayItem createItem(int i) {
+            return mOverlays.get(i);
+        }
 
 
-		@Override
-		public int size() {
-			return mOverlays.size();
-		}
+        @Override
+        public int size() {
+            return mOverlays.size();
+        }
 
-		@Override
-		protected boolean onTap(int index) {
-			final Building building = mBuildings.get(index);
-			
-			if (building == null)
-				return true;
-			Geocoder geoCoder = new Geocoder(
-					getBaseContext(), Locale.getDefault());
-			try {
-				List<Address> addresses = geoCoder.getFromLocation(
-						building.getSpaceLatitude(), building.getSpaceLongitude(), 1); 
+        @Override
+        protected boolean onTap(int index) {
+            final Building building = mBuildings.get(index);
+            
+            if (building == null)
+                return true;
+            Geocoder geoCoder = new Geocoder(
+                    getBaseContext(), Locale.getDefault());
+            try {
+                List<Address> addresses = geoCoder.getFromLocation(
+                        building.getSpaceLatitude(), building.getSpaceLongitude(), 1); 
 
-				String add = "";
-				if (addresses.size() > 0) 
-				{
-					for (int i=0; i<addresses.get(0).getMaxAddressLineIndex(); 
-							i++)
-						add += addresses.get(0).getAddressLine(i) + "\n";
-				}
+                String add = "";
+                if (addresses.size() > 0) 
+                {
+                    for (int i=0; i<addresses.get(0).getMaxAddressLineIndex(); 
+                            i++)
+                        add += addresses.get(0).getAddressLine(i) + "\n";
+                }
 
-				AlertDialog.Builder builder = new AlertDialog.Builder(CustomBuildingMap.this);
-				builder.setTitle("Building Information");
-				builder.setMessage(building.getBuildingName() + ": " + building.getRoomCount() + 
-						" rooms \n" + add + "Distance: " + Math.round(building.getDistance()) + " m");
-				builder.setPositiveButton("Back to Map", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-				builder.setNegativeButton("View Rooms", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-						Intent i = new Intent();
-						i.putExtra("STUDYSPACELIST", building.getRooms());
-						setResult(RESULT_OK, i);
-						//ends this activity
-						finish();
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(CustomBuildingMap.this);
+                builder.setTitle("Building Information");
+                builder.setMessage(building.getBuildingName() + ": " + building.getRoomCount() + 
+                        " rooms \n" + add + "Distance: " + Math.round(building.getDistance()) + " m");
+                builder.setPositiveButton("Back to Map", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+                builder.setNegativeButton("View Rooms", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        Intent i = new Intent();
+                        i.putExtra("STUDYSPACELIST", building.getRooms());
+                        setResult(RESULT_OK, i);
+                        //ends this activity
+                        finish();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
 
-			}
-			catch (IOException e) {                
-				e.printStackTrace();
-			}   
-			return true;
-		}
+            }
+            catch (IOException e) {                
+                e.printStackTrace();
+            }   
+            return true;
+        }
 
-	}
+    }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			Intent i = new Intent();
-			ArrayList<StudySpace> nlist = new ArrayList<StudySpace>();
-			i.putExtra("STUDYSPACELIST", nlist);
-			setResult(RESULT_OK, i);
-			finish();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            Intent i = new Intent();
+            ArrayList<StudySpace> nlist = new ArrayList<StudySpace>();
+            i.putExtra("STUDYSPACELIST", nlist);
+            setResult(RESULT_OK, i);
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }
