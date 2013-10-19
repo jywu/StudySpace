@@ -80,9 +80,10 @@ public class SearchActivity extends Activity {
     private String provider;
     public static double latitude = 0;
     public static double longitude = 0;
-    private Button mFavoritesButton;
-    private Button mSearchButton;
-    private Button mHistoryButton;
+    //TODO DELETE
+//    private Button mFavoritesButton;
+//    private Button mSearchButton;
+//    private Button mHistoryButton;
     
     Boolean isInternetPresent = false;
 
@@ -142,7 +143,7 @@ public class SearchActivity extends Activity {
         });
         
         // initializes database
-        DBManager.init(this);
+        DBManager.initDB(this);
     }
     
     @Override
@@ -295,9 +296,10 @@ public class SearchActivity extends Activity {
     }
     
     //XXX
+    //action to perform history button click
     public void onHistoryButtonClick(View view) {
-        Intent intent = new Intent(this, HistoryActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(this, HistoryListActivity.class);
+        startActivityForResult(intent, -1);
     }
     
     /*
@@ -340,7 +342,7 @@ public class SearchActivity extends Activity {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
 
-            System.out.print("CURRENT LOCATION ISISISISISISISIS");
+            System.out.print("CURRENT LOCATION IS");
             System.out.println(message);
         } 
 
@@ -669,9 +671,10 @@ public class SearchActivity extends Activity {
     
     private void captureViewElements() {
         // General:
-        mSearchButton = (Button)findViewById(R.id.searchButton);
-        mFavoritesButton = (Button)findViewById(R.id.favoritesButton);
-        mHistoryButton = (Button)findViewById(R.id.historyButton);
+        //TODO DELETE
+//        mSearchButton = (Button)findViewById(R.id.searchButton);
+//        mFavoritesButton = (Button)findViewById(R.id.favoritesButton);
+//        mHistoryButton = (Button)findViewById(R.id.historyButton);
         mNumberOfPeopleTextView = (TextView)findViewById(R.id.numberOfPeopleTextView);
         mNumberOfPeopleSlider = (SeekBar)findViewById(R.id.numberOfPeopleSlider);
         mPrivateCheckBox = (CheckBox)findViewById(R.id.privateCheckBox);

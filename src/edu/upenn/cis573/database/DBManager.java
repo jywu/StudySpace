@@ -16,11 +16,15 @@ public class DBManager {
     private static DBHelper helper;
     private static SQLiteDatabase db;
       
-    public static void init(Context context) {
+    public static void initDB(Context context) {
         helper = new DBHelper(context);         
         db = helper.getWritableDatabase(); 
     }
     
+    /**
+     * Adds new StudySpace entry to the database.
+     * @param history New StudySpace entry to be added.
+     */
     public static void add(StudySpace history) {
     	ContentValues values = new ContentValues();
     	values.put(DBHelper.COLUMN_NAME_DATE,          history.getDate());
@@ -40,9 +44,14 @@ public class DBManager {
 
     	// Insert the new row, returning the primary key value of the new row
     	db.insert(DBHelper.TABLE_NAME, null, values);
-    	Log.i("Database", "Entry written to database: " + history);
+    	Log.i("Database", "Entry written to database: " + 
+    	        history.getBuildingName() + " " + history.getSpaceName());
     }  
-      
+    
+    /** 
+     * Queries all histories, return an ArrayList of StudySpace objects.
+     * @return An ArrayList of StudySpace objects. 
+     */  
     public static ArrayList<StudySpace> query() {  
         ArrayList<StudySpace> histories = new ArrayList<StudySpace>();  
         Cursor c = queryTheCursor(true);
@@ -72,8 +81,10 @@ public class DBManager {
     }  
       
     /** 
-     * query all histories, return cursor 
-     * @return Cursor 
+     * Queries all histories, return a cursor.
+     * @param reversed Set true if desired return list is
+     * in a descending order; false otherwise.
+     * @return A Cursor.
      */  
     public static Cursor queryTheCursor(boolean reversed) {  
         return db.rawQuery(
@@ -81,18 +92,46 @@ public class DBManager {
                 " ORDER BY " + DBHelper.COLUMN_NAME_ID + 
                 (reversed ? " DESC" : " ASC"), null);  
     }
+    
+    /**
+     * Clears the database
+     */
+    public static void clearDB() {
+        db.execSQL("DELETE FROM " + DBHelper.TABLE_NAME);
+    }
+    
+    /**
+     * Gets the size of total entries in the database.
+     * @return The size of total entries in the database.
+     */
+    public static int size() {
+        Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + DBHelper.TABLE_NAME, null);
+        c.moveToFirst();
+        int cnt= c.getInt(0);
+        c.close();
+        return cnt;
+    }
+    
+    /**
+     * Checks whether the database is empty.
+     * @return True if the database is empty;
+     * false otherwise.
+     */
+    public static boolean isEmpty() {
+        return size() == 0;
+    }
       
     /** 
-     * close database 
+     * Close the database. 
      */  
     public static void closeDB() {  
         db.close();  
     }
     
     /**
-     * converts integers to booleans
+     * Converts integers to booleans.
      */
     private static boolean parseBoolean(int b) {
-        return b == 1 ? true : false;
+        return b == 1;
     }
 }

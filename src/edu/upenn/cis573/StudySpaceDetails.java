@@ -26,9 +26,7 @@ public class StudySpaceDetails extends FragmentActivity {
     private TabDetails tabdetails;
     private StudySpace o;
     private Preferences p;
-
     private SharedPreferences favorites;
-
     Boolean isInternetPresent = false;
 
     // Connection detector class
@@ -76,12 +74,9 @@ public class StudySpaceDetails extends FragmentActivity {
         }
     }
 
-    public void onShareClick(View v) {
-
-    }
+    public void onShareClick(View v) { }
 
     public void onDetailsClick(View v) {
-
         ImageView image = (ImageView) findViewById(R.id.button_details);
         image.setImageResource(R.color.lightblue);
 
@@ -152,7 +147,11 @@ public class StudySpaceDetails extends FragmentActivity {
         return true;
     }
     
+    /**
+     * Adds this StudySpace object to the database.
+     */
     private void addToHistory() {
+        o.setDate(System.currentTimeMillis());
         DBManager.add(o);
     }
 

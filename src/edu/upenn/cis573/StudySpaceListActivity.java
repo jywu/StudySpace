@@ -33,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import edu.upenn.cis573.database.DBManager;
 
 /**
  * The StudySpaceListActivity class is the main class of the application, 
@@ -42,20 +43,22 @@ import android.widget.TextView;
  */
 public class StudySpaceListActivity extends ListActivity {
 
+    public static final int ACTIVITY_ViewSpaceDetails = 1;
+    public static final int ACTIVITY_SearchActivity = 2;
+    public static final int ACTIVITY_ViewRooms = 3;
+    static final String FAV_PREFERENCES = "favoritePreferences";
+    
     private ProgressDialog ss_ProgressDialog = null; // Dialog when loading
     private ArrayList<StudySpace> ss_list = null; // List containing available rooms
     private StudySpaceListAdapter ss_adapter; // Adapter to format list items
     private Runnable viewAvailableSpaces; // runnable to get available spaces
-    public static final int ACTIVITY_ViewSpaceDetails = 1;
-    public static final int ACTIVITY_SearchActivity = 2;
-    public static final int ACTIVITY_ViewRooms = 3;
     private SearchOptions searchOptions; // create a default searchoption later
-    private boolean favSelected;
     private Preferences preferences;
-
     private SharedPreferences favorites;
+    
     private boolean mapViewClicked;
-    static final String FAV_PREFERENCES = "favoritePreferences";
+    private boolean favSelected;
+    
 
     /** Called when the activity is first created. */
     @Override
@@ -64,13 +67,10 @@ public class StudySpaceListActivity extends ListActivity {
         setContentView(R.layout.sslist);
 
         favorites = getSharedPreferences(FAV_PREFERENCES, 0);
-
         ss_list = new ArrayList<StudySpace>(); // List to store StudySpaces
         ss_adapter = new StudySpaceListAdapter(this, R.layout.sslistitem, ss_list);
         setListAdapter(ss_adapter); // Adapter to read list and display
-
         Map<String, ?> items = favorites.getAll();
-        
         preferences = new Preferences(); // Change this when bundle is implemented.
         
         for (String s : items.keySet()) {
@@ -110,6 +110,7 @@ public class StudySpaceListActivity extends ListActivity {
         Intent i = new Intent(this, SearchActivity.class);
         startActivityForResult(i,
                 StudySpaceListActivity.ACTIVITY_SearchActivity);
+        // attaches listener to the filter
         final TextView search = (EditText) findViewById(R.id.filter);
         search.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
@@ -191,7 +192,7 @@ public class StudySpaceListActivity extends ListActivity {
 
         runOnUiThread(returnRes);
     }
-
+    
     public void onFavClick(View v) {
         Log.d("fav", "FavClick");
         ImageView image = (ImageView) this.findViewById(R.id.favorite_button);
@@ -205,14 +206,12 @@ public class StudySpaceListActivity extends ListActivity {
             ss_adapter.allToFav();
         }
     }
-
     public void onSearchClick(View view) {
         // Start up the search options screen
         Intent i = new Intent(this, SearchActivity.class);
         startActivityForResult(i,
                 StudySpaceListActivity.ACTIVITY_SearchActivity);
     }
-
     public void onMapViewClick(View view) {
         // Start up the search options screen
         Log.d("MapView", "Clicked");
@@ -336,9 +335,9 @@ public class StudySpaceListActivity extends ListActivity {
                 else
                     proj.setVisibility(View.VISIBLE);
             }
-
+            
+            //defines actions for on-click of each entry
             v.setOnClickListener(new OnClickListener(){
-
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(getContext(), StudySpaceDetails.class);
@@ -347,9 +346,11 @@ public class StudySpaceListActivity extends ListActivity {
                     startActivityForResult(i,
                             StudySpaceListActivity.ACTIVITY_ViewSpaceDetails);
                     
-                }});
+                }
+            });
+            
+            //defines actions for long on-click of each entry
             v.setOnLongClickListener(new OnLongClickListener() {
-
                 @Override
                 public boolean onLongClick(View v) {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
@@ -361,6 +362,7 @@ public class StudySpaceListActivity extends ListActivity {
                             .setPositiveButton("Reserve",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
+                                            DBManager.add(o);
                                             Intent k = null;
                                             if(o.getBuildingType().equals(StudySpace.WHARTON)) {
                                                 k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://spike.wharton.upenn.edu/Calendar/gsr.cfm?"));

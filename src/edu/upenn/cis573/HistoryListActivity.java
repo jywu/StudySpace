@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import edu.upenn.cis573.R;
 import edu.upenn.cis573.database.DBManager;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -27,9 +28,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class HistoryActivity extends ListActivity{
+public class HistoryListActivity extends ListActivity{
 
-    private Button clearHistory;
+    private Button clearHistoryButton;
+    private TextView searchButton;
     private ArrayList<StudySpace> historyList;
     private HistoryListAdapter historyListAdapter;
     
@@ -41,48 +43,67 @@ public class HistoryActivity extends ListActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.historyview);
         
+        // retrieves history from database
         historyList = DBManager.query();
         historyListAdapter = new HistoryListAdapter(this, R.layout.historyviewitem, historyList);
         setListAdapter(historyListAdapter);
+        //TODO delete
         // Start up the search options screen
 //        Intent i = new Intent(this, SearchActivity.class);
 //        startActivityForResult(i,
 //                HistoryActivity.ACTIVITY_SearchActivity);
-        final TextView search = (EditText) findViewById(R.id.filter);
+        
+        // attaches listener to the filter
+        final TextView search = (EditText) findViewById(R.id.filter_history);
         search.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 String query = search.getText().toString();
                 historyListAdapter.filterResults(query);
             }
 
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                    int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
-            public void onTextChanged(CharSequence s, int start, int before,
-                    int count) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+        });
+        
+        // attaches listener to the clear history button
+        clearHistoryButton = (Button) findViewById(R.id.clearHistoryButton);
+        clearHistoryButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                System.out.println("clear history button clicked!");
+                confirmDialog();
             }
         });
         
-        
-        //--------------------------old changes
-        getWidget();
-        clearHistory.setOnClickListener(new View.OnClickListener() {
+        // attaches listener to the search button(text view)
+        searchButton = (TextView) findViewById(R.id.searchButton);
+        final HistoryListActivity currContext = this;
+        searchButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("clicked!");
-                confirmDialog();
+                System.out.println("search button clicked!");
+                currContext.finish();
             }
         });
     }
     
     protected void confirmDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure to clear?");
+        final Context currContext = this;
+        AlertDialog.Builder builder = new AlertDialog.Builder(currContext);
+        builder.setMessage("Are you sure to clear? (This action is unrecoverable)");
         builder.setTitle("Confirmation");
         builder.setPositiveButton("Yes", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+                if (DBManager.isEmpty()) {
+                    new AlertDialog.Builder(currContext)
+                    .setTitle("No History")
+                    .setMessage("Current history is empty!")
+                    .show();
+                }
+                else {
+                    DBManager.clearDB();
+                    ((Activity)currContext).finish();
+                }
             }
         });
     
@@ -96,24 +117,22 @@ public class HistoryActivity extends ListActivity{
         builder.create().show();
     }
     
-    private void getWidget(){
-        clearHistory = (Button) findViewById(R.id.clearHistory);
-    }
-    
     private class HistoryListAdapter extends ArrayAdapter<StudySpace> {
 
         private ArrayList<StudySpace> list_items;
         private ArrayList<StudySpace> orig_items;
         private ArrayList<StudySpace> before_search;
-        private ArrayList<StudySpace> fav_orig_items;
-        private ArrayList<StudySpace> temp; // Store list items for when favorites is displayed
+      //TODO delete
+//        private ArrayList<StudySpace> fav_orig_items;
+//        private ArrayList<StudySpace> temp; // Store list items for when favorites is displayed
 
         public HistoryListAdapter(Context context, int textViewResourceId,
                 ArrayList<StudySpace> items) {
             super(context, textViewResourceId, items);
-            this.list_items = items;
-            this.orig_items = items;
-            this.fav_orig_items = new ArrayList<StudySpace>();
+            list_items = items;
+            orig_items = items;
+//            fav_orig_items = new ArrayList<StudySpace>();
+            before_search = (ArrayList<StudySpace>) list_items.clone();
         }
 
         @Override
@@ -181,20 +200,22 @@ public class HistoryActivity extends ListActivity{
                 else
                     proj.setVisibility(View.VISIBLE);
             }
-
-//            v.setOnClickListener(new OnClickListener(){
-//
-//                @Override
-//                public void onClick(View v) {
-//                    Intent i = new Intent(getContext(), StudySpaceDetails.class);
-//                    i.putExtra("STUDYSPACE", o);
+            
+            //defines actions for on-click of each entry
+            v.setOnClickListener(new android.view.View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getContext(), HistoryDetails.class);
+                    i.putExtra("STUDYSPACE", o);
 //                    i.putExtra("PREFERENCES", preferences);
-//                    startActivityForResult(i,
-//                            StudySpaceListActivity.ACTIVITY_ViewSpaceDetails);
-//                    
-//                }});
+                    startActivityForResult(i,
+                            HistoryListActivity.ACTIVITY_ViewSpaceDetails);
+                    
+                }
+            });
+            
+            //defines actions for long on-click of each entry
             v.setOnLongClickListener(new OnLongClickListener() {
-
                 @Override
                 public boolean onLongClick(View v) {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(

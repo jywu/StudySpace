@@ -29,7 +29,6 @@ import android.widget.Toast;
  * the buttons for Add to Favorites or Add to Calendar.
  */
 public class TabDetails extends Fragment {
-
     private StudySpace o;
     private Preferences p;
     private View fav;
