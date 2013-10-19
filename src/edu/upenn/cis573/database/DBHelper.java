@@ -43,11 +43,11 @@ public class DBHelper extends SQLiteOpenHelper{
                 COLUMN_NAME_LONGITUDE     + " REAL, " +
                 COLUMN_NAME_ROOMNUM       + " INTEGER, " +
                 COLUMN_NAME_MAXOCCUPANCY  + " INTEGER, " +
-                COLUMN_NAME_HASWHITEBOARD + " TEXT, " +
+                COLUMN_NAME_HASWHITEBOARD + " INTEGER, " +
                 COLUMN_NAME_PRIVACY       + " TEXT, " +
-                COLUMN_NAME_HASCOMPUTER   + " TEXT, " +
+                COLUMN_NAME_HASCOMPUTER   + " INTEGER, " +
                 COLUMN_NAME_RESERVETYPE   + " TEXT, " +
-                COLUMN_NAME_HASBIGSCREEN  + " TEXT, " +
+                COLUMN_NAME_HASBIGSCREEN  + " INTEGER, " +
                 COLUMN_NAME_COMMENTS      + " TEXT, " +
                 COLUMN_NAME_ROOMNAME      + " TEXT)");  
     }  

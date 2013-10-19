@@ -56,16 +56,16 @@ public class DBManager {
             history.setLongitude(c.getDouble(c.getColumnIndex(DBHelper.COLUMN_NAME_LONGITUDE)));
             history.setNumber_of_rooms(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_ROOMNUM)));
             history.setMax_occupancy(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_MAXOCCUPANCY)));
-            history.setHas_whiteboard(Boolean.parseBoolean(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_HASWHITEBOARD))));
+            history.setHas_whiteboard(parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASWHITEBOARD))));
             history.setPrivacy(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_PRIVACY)));
-            history.setHas_computer(Boolean.parseBoolean(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_HASCOMPUTER))));
+            history.setHas_computer(parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASCOMPUTER))));
             history.setReserve_type(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_RESERVETYPE)));
-            history.setHas_big_screen(Boolean.parseBoolean(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_HASBIGSCREEN))));
+            history.setHas_big_screen(parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASBIGSCREEN))));
             history.setComments(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_COMMENTS)));
             history.setRooms(new Room[] {new Room(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_ROOMNAME)))});
             histories.add(history);
             c.moveToNext();
-        }  
+        }
         c.close();
         Log.i("Database", "Entries read from database (size: " + histories.size() + ").");
         return histories;  
@@ -73,7 +73,7 @@ public class DBManager {
       
     /** 
      * query all histories, return cursor 
-     * @return  Cursor 
+     * @return Cursor 
      */  
     public static Cursor queryTheCursor(boolean reversed) {  
         return db.rawQuery(
@@ -87,5 +87,12 @@ public class DBManager {
      */  
     public static void closeDB() {  
         db.close();  
+    }
+    
+    /**
+     * converts integers to booleans
+     */
+    private static boolean parseBoolean(int b) {
+        return b == 1 ? true : false;
     }
 }
