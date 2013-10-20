@@ -29,6 +29,10 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import edu.upenn.cis573.datastructure.Building;
+import edu.upenn.cis573.datastructure.Preferences;
+import edu.upenn.cis573.util.ConnectionDetector;
+
 /**
  * The CustomBuildingMap class maps a list of StudySpace locations 
  * using the Google Maps API and an ArrayList of StudySpace objects 

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 
-import edu.upenn.cis573.Building;
-import edu.upenn.cis573.Room;
 import edu.upenn.cis573.StudySpace;
+import edu.upenn.cis573.datastructure.Building;
+import edu.upenn.cis573.datastructure.Room;
 import junit.framework.TestCase;
 
 public class BuildingTest extends TestCase {

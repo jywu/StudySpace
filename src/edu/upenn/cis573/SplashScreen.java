@@ -1,6 +1,7 @@
 package edu.upenn.cis573;
 
 import edu.upenn.cis573.R;
+import edu.upenn.cis573.util.ConnectionDetector;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

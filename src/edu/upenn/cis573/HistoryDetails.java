@@ -1,15 +1,13 @@
 package edu.upenn.cis573;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
+import edu.upenn.cis573.util.ConnectionDetector;
+
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -19,8 +17,6 @@ public class HistoryDetails extends FragmentActivity {
 
     private HistoryTabDetails tabdetails;
     private StudySpace o;
-//    private Preferences p;
-//    private SharedPreferences favorites;
     Boolean isInternetPresent = false;
 
     // Connection detector class
@@ -31,14 +27,8 @@ public class HistoryDetails extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.historyviewdetails);
 
-//        favorites = getSharedPreferences(StudySpaceListActivity.FAV_PREFERENCES, 0);
-
         Intent i = getIntent();
         o = (StudySpace) i.getSerializableExtra("STUDYSPACE");
-//        p = (Preferences) i.getSerializableExtra("PREFERENCES");
-//        if(p == null) {
-//            p = new Preferences();
-//        }
         tabdetails = new HistoryTabDetails();
         
         // get Internet status
@@ -62,7 +52,6 @@ public class HistoryDetails extends FragmentActivity {
             // Ask user to connect to Internet
             cd.showAlertDialog(HistoryDetails.this, "No Internet Connection",
                     "You don't have internet connection.", false);
-
         }
     }
 
@@ -88,20 +77,20 @@ public class HistoryDetails extends FragmentActivity {
         startActivity(i);
     }
     
-    @Override//XXX delete??
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-            Intent i = new Intent();
-
-//            i.putExtra("PREFERENCES", (Serializable)p);
-            setResult(RESULT_OK, i);
-            //ends this activity
-            finish();
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+//    @Override//XXX delete??
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//
+//            Intent i = new Intent();
+//
+////            i.putExtra("PREFERENCES", (Serializable)p);
+//            setResult(RESULT_OK, i);
+//            //ends this activity
+//            finish();
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

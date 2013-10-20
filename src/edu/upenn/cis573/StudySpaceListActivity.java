@@ -34,6 +34,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.upenn.cis573.database.DBManager;
+import edu.upenn.cis573.datastructure.Preferences;
+import edu.upenn.cis573.datastructure.Room;
+import edu.upenn.cis573.datastructure.SearchOptions;
+import edu.upenn.cis573.util.APIAccessor;
+import edu.upenn.cis573.util.ConnectionDetector;
 
 /**
  * The StudySpaceListActivity class is the main class of the application, 
@@ -42,7 +47,11 @@ import edu.upenn.cis573.database.DBManager;
  * specifications.
  */
 public class StudySpaceListActivity extends ListActivity {
-
+    /*
+     ******************************************
+     *                Members
+     ******************************************
+     */
     public static final int ACTIVITY_ViewSpaceDetails = 1;
     public static final int ACTIVITY_SearchActivity = 2;
     public static final int ACTIVITY_ViewRooms = 3;
@@ -59,7 +68,11 @@ public class StudySpaceListActivity extends ListActivity {
     private boolean mapViewClicked;
     private boolean favSelected;
     
-
+    /*
+     ******************************************
+     *          Overridden Methods
+     ******************************************
+     */
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +91,8 @@ public class StudySpaceListActivity extends ListActivity {
                 preferences.addFavorites(s);
             }
         }
-
+        
+        // runs a new thread to scrap text from the website
         viewAvailableSpaces = new Runnable() {
             public void run() {
                 getSpaces(); // retrieves list of study spaces
@@ -128,7 +142,44 @@ public class StudySpaceListActivity extends ListActivity {
         });
 
     }
-
+    
+    /**
+     * This methods handles key events that are not handled by
+     * any Views within this Activity.
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            if (!mapViewClicked) {
+                Intent i = new Intent(this, SearchActivity.class);
+                startActivityForResult(i,
+                        StudySpaceListActivity.ACTIVITY_SearchActivity);
+            } else {
+                ss_adapter.favToAll();
+                Intent i = new Intent(this, CustomBuildingMap.class);
+                i.putExtra("STUDYSPACELIST", this.ss_adapter.list_items);
+                startActivityForResult(i,
+                        StudySpaceListActivity.ACTIVITY_ViewRooms);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+    
+    /**
+     * This method is called when an activity you launched exits, giving you 
+     * the requestCode you started it with, the resultCode it returned, and 
+     * any additional data from it. The resultCode will be RESULT_CANCELED 
+     * if the activity explicitly returned that, didn't return any result, 
+     * or crashed during its operation. 
+     */
     protected void onActivityResult(int requestCode, int resultCode,
             Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -167,32 +218,12 @@ public class StudySpaceListActivity extends ListActivity {
             break;
         }
     }
-
-    private Runnable returnRes = new Runnable() {
-        public void run() {
-            ss_ProgressDialog.dismiss();
-            ss_adapter.notifyDataSetChanged();
-            if (searchOptions != null)
-                ss_adapter.filterSpaces();
-        }
-    };
-
-    public void getSpaces() {
-        try {
-            System.out.println("Calling the getSpace method!");
-            // APIAccessor aa = APIAccessor.getAPIAccessor();
-            ss_list.addAll(APIAccessor.getStudySpaces(this.getApplicationContext()));
-            ss_adapter.updateFavorites(preferences);
-            Thread.sleep(2000); // appears to load for 2 seconds
-
-            Log.i("ARRAY", "" + ss_list.size());
-        } catch (Exception e) {
-            Log.e("BACKGROUND_PROC", "Something went wrong!");
-        }
-
-        runOnUiThread(returnRes);
-    }
     
+    /*
+     ********************************************
+     * Defines click behaviors for main buttons 
+     ********************************************
+     */
     public void onFavClick(View v) {
         Log.d("fav", "FavClick");
         ImageView image = (ImageView) this.findViewById(R.id.favorite_button);
@@ -206,12 +237,14 @@ public class StudySpaceListActivity extends ListActivity {
             ss_adapter.allToFav();
         }
     }
+    
     public void onSearchClick(View view) {
         // Start up the search options screen
         Intent i = new Intent(this, SearchActivity.class);
         startActivityForResult(i,
                 StudySpaceListActivity.ACTIVITY_SearchActivity);
     }
+    
     public void onMapViewClick(View view) {
         // Start up the search options screen
         Log.d("MapView", "Clicked");
@@ -221,25 +254,6 @@ public class StudySpaceListActivity extends ListActivity {
                 StudySpaceListActivity.ACTIVITY_ViewRooms);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            if (!mapViewClicked) {
-                Intent i = new Intent(this, SearchActivity.class);
-                startActivityForResult(i,
-                        StudySpaceListActivity.ACTIVITY_SearchActivity);
-            } else {
-                ss_adapter.favToAll();
-                Intent i = new Intent(this, CustomBuildingMap.class);
-                i.putExtra("STUDYSPACELIST", this.ss_adapter.list_items);
-                startActivityForResult(i,
-                        StudySpaceListActivity.ACTIVITY_ViewRooms);
-            }
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
     // detail of the nearest study space
     public void onFNButtonSelected(ArrayList<StudySpace> arr) {
         Intent i = new Intent(this, StudySpaceDetails.class);
@@ -247,6 +261,112 @@ public class StudySpaceListActivity extends ListActivity {
         i.putExtra("PREFERENCES", preferences);
         startActivityForResult(i,
                 StudySpaceListActivity.ACTIVITY_ViewSpaceDetails);
+    }
+
+    /*
+     ******************************************
+     *                Helpers
+     ******************************************
+     */
+    private Runnable returnRes = new Runnable() {
+        public void run() {
+            ss_ProgressDialog.dismiss();
+            ss_adapter.notifyDataSetChanged();
+            if (searchOptions != null)
+                ss_adapter.filterSpaces();
+        }
+    };
+
+    public void getSpaces() {
+        try {
+            System.out.println("Calling the getSpace method!");
+            ss_list.addAll(APIAccessor.getStudySpaces(this.getApplicationContext()));
+            ss_adapter.updateFavorites(preferences);
+            Thread.sleep(2000); // appears to load for 2 seconds
+
+            Log.i("ARRAY", "" + ss_list.size());
+        } catch (Exception e) {
+            Log.e("BACKGROUND_PROC", "Something went wrong!");
+        }
+        runOnUiThread(returnRes);
+    }
+    
+    public ArrayList<StudySpace> filterByDate(ArrayList<StudySpace> arr) {
+        Date d1 = searchOptions.getStartDate();
+        Date d2 = searchOptions.getEndDate();
+
+        for (int i = arr.size() - 1; i >= 0; i--) {
+            boolean flag = false;
+            for (Room r : arr.get(i).getRooms()) {
+                try {
+                    if (r.searchAvailability(d1, d2)) {
+                        flag = true;
+                    }
+                } catch (Exception e) {
+                    // Log.e("exception","here");
+                    // arr.remove(i); shouldn't be here
+                }
+            }
+
+            if (!flag)
+                arr.remove(i);
+        }
+        return arr;
+    }
+
+    public ArrayList<StudySpace> filterByPeople(ArrayList<StudySpace> arr) {
+        for (int i = arr.size() - 1; i >= 0; i--) {
+            if (arr.get(i).getMaximumOccupancy() < searchOptions.getNumberOfPeople())
+                arr.remove(i);
+        }
+        return arr;
+    }
+    
+    public ArrayList<StudySpace> sortByDistance(ArrayList<StudySpace> arr) {
+        double currentLatitude = SearchActivity.latitude;
+        double currentLongitude = SearchActivity.longitude;
+        for (StudySpace temp : arr) {
+            double spaceLatitude = temp.getSpaceLatitude();
+            double spaceLongitude = temp.getSpaceLongitude();
+            float results[] = new float[3];
+            Location.distanceBetween(currentLatitude, currentLongitude,
+                    spaceLatitude, spaceLongitude, results);
+            double distance = results[0];
+            temp.setDistance(distance);
+        }
+        Collections.sort(arr);
+        System.out.println("Results havs already been sorted!");
+
+        if (arr.isEmpty()) {
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                    getBaseContext());
+            // set title
+            alertDialogBuilder.setTitle("No Results Found!");
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage(
+                            "No rooms available with the selected criteria")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+            // create alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            // show it
+            alertDialog.show();
+        }
+        return arr;
+    }
+    
+    public ArrayList<StudySpace> getList() {
+        return ss_list;
     }
     
     /**
@@ -547,89 +667,4 @@ public class StudySpaceListActivity extends ListActivity {
         }
     }
 
-    public ArrayList<StudySpace> filterByDate(ArrayList<StudySpace> arr) {
-        Date d1 = searchOptions.getStartDate();
-        Date d2 = searchOptions.getEndDate();
-
-        for (int i = arr.size() - 1; i >= 0; i--) {
-            boolean flag = false;
-            for (Room r : arr.get(i).getRooms()) {
-                try {
-                    if (r.searchAvailability(d1, d2)) {
-                        flag = true;
-                    }
-                } catch (Exception e) {
-                    // Log.e("exception","here");
-                    // arr.remove(i); shouldn't be here
-                }
-            }
-
-            if (!flag)
-                arr.remove(i);
-        }
-        return arr;
-    }
-
-    public ArrayList<StudySpace> filterByPeople(ArrayList<StudySpace> arr) {
-        for (int i = arr.size() - 1; i >= 0; i--) {
-            if (arr.get(i).getMaximumOccupancy() < searchOptions.getNumberOfPeople())
-                arr.remove(i);
-        }
-        return arr;
-    }
-    
-    public ArrayList<StudySpace> sortByDistance(ArrayList<StudySpace> arr) {
-        double currentLatitude = SearchActivity.latitude;
-        double currentLongitude = SearchActivity.longitude;
-        for (StudySpace temp : arr) {
-            double spaceLatitude = temp.getSpaceLatitude();
-            double spaceLongitude = temp.getSpaceLongitude();
-            float results[] = new float[3];
-            Location.distanceBetween(currentLatitude, currentLongitude,
-                    spaceLatitude, spaceLongitude, results);
-            double distance = results[0];
-            temp.setDistance(distance);
-        }
-        Collections.sort(arr);
-        System.out.println("Results havs already been sorted!");
-
-        if (arr.isEmpty()) {
-
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                    getBaseContext());
-            // set title
-            alertDialogBuilder.setTitle("No Results Found!");
-
-            // set dialog message
-            alertDialogBuilder
-                    .setMessage(
-                            "No rooms available with the selected criteria")
-                    .setCancelable(false)
-                    .setPositiveButton("Ok",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-
-            // create alert dialog
-            AlertDialog alertDialog = alertDialogBuilder.create();
-
-            // show it
-            alertDialog.show();
-        }
-        return arr;
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
-    
-    public ArrayList<StudySpace> getList() {
-        return ss_list;
-    }
 }

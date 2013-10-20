@@ -47,11 +47,6 @@ public class HistoryListActivity extends ListActivity{
         historyList = DBManager.query();
         historyListAdapter = new HistoryListAdapter(this, R.layout.historyviewitem, historyList);
         setListAdapter(historyListAdapter);
-        //TODO delete
-        // Start up the search options screen
-//        Intent i = new Intent(this, SearchActivity.class);
-//        startActivityForResult(i,
-//                HistoryActivity.ACTIVITY_SearchActivity);
         
         // attaches listener to the filter
         final TextView search = (EditText) findViewById(R.id.filter_history);
@@ -66,24 +61,32 @@ public class HistoryListActivity extends ListActivity{
             public void onTextChanged(CharSequence s, int start, int before, int count) { }
         });
         
-        // attaches listener to the clear history button
+        // attaches listener to the Clear History button
         clearHistoryButton = (Button) findViewById(R.id.clearHistoryButton);
         clearHistoryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("clear history button clicked!");
+                System.out.println("Clear History button clicked!");
                 confirmDialog();
             }
         });
         
-        // attaches listener to the search button(text view)
+        // attaches listener to the Search button(text view)
         searchButton = (TextView) findViewById(R.id.searchButton);
         final HistoryListActivity currContext = this;
         searchButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("search button clicked!");
+                System.out.println("Search button clicked!");
                 currContext.finish();
             }
         });
+    }
+
+    //XXX defines click behaviors for the MapView button
+    public void onMapViewClickHistory(View view) {
+        System.out.println("MapView button clicked!");
+        Intent i = new Intent(this, CustomBuildingMap.class);
+        i.putExtra("STUDYSPACELIST", historyList);
+        startActivityForResult(i, -1);
     }
     
     protected void confirmDialog() {
@@ -122,16 +125,12 @@ public class HistoryListActivity extends ListActivity{
         private ArrayList<StudySpace> list_items;
         private ArrayList<StudySpace> orig_items;
         private ArrayList<StudySpace> before_search;
-      //TODO delete
-//        private ArrayList<StudySpace> fav_orig_items;
-//        private ArrayList<StudySpace> temp; // Store list items for when favorites is displayed
 
         public HistoryListAdapter(Context context, int textViewResourceId,
                 ArrayList<StudySpace> items) {
             super(context, textViewResourceId, items);
             list_items = items;
             orig_items = items;
-//            fav_orig_items = new ArrayList<StudySpace>();
             before_search = (ArrayList<StudySpace>) list_items.clone();
         }
 
@@ -207,7 +206,6 @@ public class HistoryListActivity extends ListActivity{
                 public void onClick(View v) {
                     Intent i = new Intent(getContext(), HistoryDetails.class);
                     i.putExtra("STUDYSPACE", o);
-//                    i.putExtra("PREFERENCES", preferences);
                     startActivityForResult(i,
                             HistoryListActivity.ACTIVITY_ViewSpaceDetails);
                     
@@ -272,8 +270,6 @@ public class HistoryListActivity extends ListActivity{
             return list_items.get(position);
         }
 
-
-
         @SuppressWarnings("unchecked")
         public void filterResults(String query) {
             query = query.toLowerCase(Locale.US);
@@ -292,6 +288,5 @@ public class HistoryListActivity extends ListActivity{
             }
             notifyDataSetChanged();
         }
-
     }
 }

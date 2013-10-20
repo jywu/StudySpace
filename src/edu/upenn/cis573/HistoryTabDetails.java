@@ -1,31 +1,22 @@
 package edu.upenn.cis573;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
+
+import edu.upenn.cis573.datastructure.Room;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class HistoryTabDetails extends Fragment {
     private StudySpace o;
-//    private Preferences p;
-//    private View fav;
-//    private View unfav;
-    private Date begin;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,10 +30,6 @@ public class HistoryTabDetails extends Fragment {
         super.onActivityCreated(savedInstanceState);
         Intent i = getActivity().getIntent();
         o = (StudySpace) i.getSerializableExtra("STUDYSPACE");
-//        p = (Preferences) i.getSerializableExtra("PREFERENCES");
-//        if(p == null) {
-//            p = new Preferences();
-//        }
 
         TextView tt = (TextView) getView().findViewById(R.id.spacename_history);
         tt.setText(o.getBuildingName());

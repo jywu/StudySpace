@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import edu.upenn.cis573.R;
+import edu.upenn.cis573.datastructure.Preferences;
+import edu.upenn.cis573.datastructure.Room;
 
 import android.app.Activity;
 import android.app.AlertDialog;

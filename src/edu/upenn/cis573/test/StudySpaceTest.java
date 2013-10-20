@@ -5,8 +5,8 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 
-import edu.upenn.cis573.Room;
 import edu.upenn.cis573.StudySpace;
+import edu.upenn.cis573.datastructure.Room;
 
 public class StudySpaceTest extends TestCase {
 	

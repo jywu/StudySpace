@@ -54,7 +54,5 @@ public class DBHelper extends SQLiteOpenHelper{
   
     //If DATABASE_VERSION has been modified, system would find the difference of versions, onUpgrade would be called  
     @Override  
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {  
-//TODO        db.execSQL("ALTER TABLE history ADD COLUMN other STRING");
-    }
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { /* not yet implemented! */ }
 }

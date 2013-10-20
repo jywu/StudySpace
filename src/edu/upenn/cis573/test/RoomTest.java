@@ -2,7 +2,8 @@ package edu.upenn.cis573.test;
 
 import org.json.JSONObject;
 import org.junit.Before;
-import edu.upenn.cis573.Room;
+
+import edu.upenn.cis573.datastructure.Room;
 
 public class RoomTest extends junit.framework.TestCase {
 	Room _room1;

@@ -6,10 +6,10 @@ import org.junit.Before;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.test.ActivityInstrumentationTestCase2;
-import edu.upenn.cis573.Preferences;
-import edu.upenn.cis573.Room;
 import edu.upenn.cis573.StudySpace;
 import edu.upenn.cis573.StudySpaceDetails;
+import edu.upenn.cis573.datastructure.Preferences;
+import edu.upenn.cis573.datastructure.Room;
 
 public class StudySpaceDetailsTest extends 
 ActivityInstrumentationTestCase2<StudySpaceDetails> {

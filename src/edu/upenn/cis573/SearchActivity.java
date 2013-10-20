@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.util.Calendar;
 import edu.upenn.cis573.R;
 import edu.upenn.cis573.database.DBManager;
+import edu.upenn.cis573.datastructure.SearchOptions;
+import edu.upenn.cis573.util.ConnectionDetector;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -80,10 +83,6 @@ public class SearchActivity extends Activity {
     private String provider;
     public static double latitude = 0;
     public static double longitude = 0;
-    //TODO DELETE
-//    private Button mFavoritesButton;
-//    private Button mSearchButton;
-//    private Button mHistoryButton;
     
     Boolean isInternetPresent = false;
 
@@ -234,14 +233,23 @@ public class SearchActivity extends Activity {
 
     //Updates search options then delivers intent
     public void onSearchButtonClick(View view) {
-
-        cd = new ConnectionDetector(getApplicationContext());
-
         // get Internet status
+        cd = new ConnectionDetector(getApplicationContext());
         isInternetPresent = cd.isConnectingToInternet();
 
         if (isInternetPresent) {
             putDataInSearchOptionsObject();
+            
+            // illegal search criteria XXX
+            if (!mSearchOptions.getEngi() && !mSearchOptions.getWhar() &&
+                    !mSearchOptions.getLib() && !mSearchOptions.getOth()) {
+                new AlertDialog.Builder(this)
+                .setTitle("Invalid Search Criteria")
+                .setMessage("Please select at least one library!")
+                .show();
+                return;
+            }
+            
             //Returns to List activity
             Intent i = new Intent();
             //Put your searchOption class here
@@ -256,7 +264,6 @@ public class SearchActivity extends Activity {
         } else {
             cd.showAlertDialog(SearchActivity.this, "No Internet Connection",
                     "You don't have internet connection.", false);
-
         }
     }
 
@@ -671,10 +678,6 @@ public class SearchActivity extends Activity {
     
     private void captureViewElements() {
         // General:
-        //TODO DELETE
-//        mSearchButton = (Button)findViewById(R.id.searchButton);
-//        mFavoritesButton = (Button)findViewById(R.id.favoritesButton);
-//        mHistoryButton = (Button)findViewById(R.id.historyButton);
         mNumberOfPeopleTextView = (TextView)findViewById(R.id.numberOfPeopleTextView);
         mNumberOfPeopleSlider = (SeekBar)findViewById(R.id.numberOfPeopleSlider);
         mPrivateCheckBox = (CheckBox)findViewById(R.id.privateCheckBox);

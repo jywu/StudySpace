@@ -2,8 +2,8 @@ package edu.upenn.cis573.database;
 
 import java.util.ArrayList;
 
-import edu.upenn.cis573.Room;
 import edu.upenn.cis573.StudySpace;
+import edu.upenn.cis573.datastructure.Room;
 
 import android.content.ContentValues;
 import android.content.Context;

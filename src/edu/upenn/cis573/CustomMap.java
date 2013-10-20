@@ -26,6 +26,9 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
+import edu.upenn.cis573.datastructure.Preferences;
+import edu.upenn.cis573.util.ConnectionDetector;
+
 /**
  * The CustomMap class is very similar to the CustomBuildingMap 
  * class, except that it plots an individual room for a StudySpace 
@@ -223,8 +226,6 @@ public class CustomMap extends MapActivity {
             }   
             return true;
         }
-
     }
-
 
 }

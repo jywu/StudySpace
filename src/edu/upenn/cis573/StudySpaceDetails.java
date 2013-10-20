@@ -14,6 +14,8 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import edu.upenn.cis573.database.DBManager;
+import edu.upenn.cis573.datastructure.Preferences;
+import edu.upenn.cis573.util.ConnectionDetector;
 
 /**
  * The StudySpaceDetails class extends FragmentActivity and 

@@ -3,6 +3,8 @@ package edu.upenn.cis573;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import edu.upenn.cis573.datastructure.Room;
+
 /**
  * This class stores all of the data regarding a building, such as its type 
  * (eg. Engineering, Wharton, Library, or Others), maximum occupancy, additional 

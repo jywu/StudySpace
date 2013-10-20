@@ -1,7 +1,8 @@
 package edu.upenn.cis573.test;
 
 import org.junit.Before;
-import edu.upenn.cis573.Preferences;
+
+import edu.upenn.cis573.datastructure.Preferences;
 
 public class PreferencesTest extends junit.framework.TestCase {
 	Preferences _pref;
