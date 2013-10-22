@@ -127,6 +127,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black" />
         </LinearLayout>
+        
 		<TextView
 		    android:id="@+id/availablenow"
 		    android:layout_width="fill_parent"
@@ -136,6 +137,7 @@
 		    android:textSize="30sp"
 		    android:textColor="@color/lightblue"
 		    />
+		
         <TextView
             android:id="@+id/favorite"
             android:layout_width="300dp"

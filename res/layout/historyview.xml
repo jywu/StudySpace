@@ -18,12 +18,12 @@
             android:src="@drawable/icon_history" />
 
         <Button
-            android:id="@+id/clearHistory"
+            android:id="@+id/clearHistoryButton"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="140dp"
+            android:layout_marginLeft="208dp"
             android:background="@color/lightblue"
             android:clickable="true"
             android:padding="10dp"
@@ -33,7 +33,6 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -67,6 +66,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/searchButton"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -87,7 +87,7 @@
             android:background="@drawable/addcalenderbtn"
             android:clickable="true"
             android:gravity="center"
-            android:onClick="onMapViewClick"
+            android:onClick="onMapViewClickHistory"
             android:padding="10dp"
             android:text="@string/mapviewbtn"
             android:textColor="@color/white"
@@ -96,7 +96,7 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/filter"
+        android:id="@+id/filter_history"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"

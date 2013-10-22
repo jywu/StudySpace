@@ -5,7 +5,7 @@ import java.util.Date;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import edu.upenn.cis573.SearchOptions;
+import edu.upenn.cis573.datastructure.SearchOptions;
 
 public class SearchOptionsTest extends TestCase {
 

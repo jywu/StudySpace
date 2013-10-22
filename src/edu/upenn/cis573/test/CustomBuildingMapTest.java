@@ -9,8 +9,8 @@ import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 
 import edu.upenn.cis573.CustomBuildingMap;
-import edu.upenn.cis573.Room;
 import edu.upenn.cis573.StudySpace;
+import edu.upenn.cis573.datastructure.Room;
 
 
 

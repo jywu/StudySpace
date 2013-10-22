@@ -3,8 +3,6 @@ package edu.upenn.cis573;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-//import edu.upenn.cis573.R;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,140 +11,150 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import edu.upenn.cis573.database.DBManager;
+import edu.upenn.cis573.datastructure.Preferences;
+import edu.upenn.cis573.util.ConnectionDetector;
 
+/**
+ * The StudySpaceDetails class extends FragmentActivity and 
+ * is used to define the methods to be called when a tab is 
+ * clicked (eg. Info, Map), or when the buttons on the page 
+ * (eg. Add to Favorites) are clicked.
+ */
 public class StudySpaceDetails extends FragmentActivity {
 
-	private TabDetails tabdetails;
-	private StudySpace o;
-	private Preferences p;
+    private TabDetails tabdetails;
+    private StudySpace o;
+    private Preferences p;
+    private SharedPreferences favorites;
+    Boolean isInternetPresent = false;
 
-	private SharedPreferences favorites;
+    // Connection detector class
+    ConnectionDetector cd;
+    
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.ssdetails);
 
-	Boolean isInternetPresent = false;
+        favorites = getSharedPreferences(StudySpaceListActivity.FAV_PREFERENCES, 0);
 
-	// Connection detector class
-	ConnectionDetector cd;
+        Intent i = getIntent();
+        o = (StudySpace) i.getSerializableExtra("STUDYSPACE");
+        p = (Preferences) i.getSerializableExtra("PREFERENCES");
+        if(p == null) {
+            p = new Preferences();
+        }
+        tabdetails = new TabDetails();
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.ssdetails);
-
-		favorites = getSharedPreferences(StudySpaceListActivity.FAV_PREFERENCES, 0);
-
-		Intent i = getIntent();
-		o = (StudySpace) i.getSerializableExtra("STUDYSPACE");
-		p = (Preferences) i.getSerializableExtra("PREFERENCES");
-		if(p == null) {
-			p = new Preferences();
-		}
-		tabdetails = new TabDetails();
-
-		cd = new ConnectionDetector(getApplicationContext());
+        cd = new ConnectionDetector(getApplicationContext());
 
 
-		// get Internet status
-		isInternetPresent = cd.isConnectingToInternet();
+        // get Internet status
+        isInternetPresent = cd.isConnectingToInternet();
 
-		// check for Internet status
-		if (isInternetPresent) {
+        // check for Internet status
+        if (isInternetPresent) {
 
-			// Saves the first state of the code
-			ImageView image = (ImageView) findViewById(R.id.button_details);
-			image.setImageResource(R.color.lightblue);
-			FragmentTransaction transaction = getSupportFragmentManager()
-					.beginTransaction();
-			transaction.replace(R.id.fragment_container, tabdetails);
-			transaction.commit();
-		}
+            // Saves the first state of the code
+            ImageView image = (ImageView) findViewById(R.id.button_details);
+            image.setImageResource(R.color.lightblue);
+            FragmentTransaction transaction = getSupportFragmentManager()
+                    .beginTransaction();
+            transaction.replace(R.id.fragment_container, tabdetails);
+            transaction.commit();
+        }
 
-		else {
-			// Internet connection is not present
-			// Ask user to connect to Internet
-			cd.showAlertDialog(StudySpaceDetails.this, "No Internet Connection",
-					"You don't have internet connection.", false);
+        else {
+            // Internet connection is not present
+            // Ask user to connect to Internet
+            cd.showAlertDialog(StudySpaceDetails.this, "No Internet Connection",
+                    "You don't have internet connection.", false);
 
+        }
+    }
 
-		}
-	}
+    public void onShareClick(View v) { }
 
-	public void onShareClick(View v) {
+    public void onDetailsClick(View v) {
+        ImageView image = (ImageView) findViewById(R.id.button_details);
+        image.setImageResource(R.color.lightblue);
 
-	}
+        // Create new fragment and transaction
+        // Fragment newFragment = new TabDetails();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, tabdetails);
+        // transaction.addToBackStack(null);
 
-	public void onDetailsClick(View v) {
+        // Commit the transaction
+        transaction.commit();
+    }
 
-		ImageView image = (ImageView) findViewById(R.id.button_details);
-		image.setImageResource(R.color.lightblue);
+    public void onMapClick(View v){
+        Intent i = new Intent(this, CustomMap.class);
+        ArrayList<StudySpace> olist = new ArrayList<StudySpace>();
+        olist.add(o);
+        i.putExtra("STUDYSPACE", o);
+        startActivity(i);
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-		// Create new fragment and transaction
-		// Fragment newFragment = new TabDetails();
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragment_container, tabdetails);
-		// transaction.addToBackStack(null);
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
 
-		// Commit the transaction
-		transaction.commit();
-	}
+            Intent i = new Intent();
 
-	public void onMapClick(View v){
-		Intent i = new Intent(this, CustomMap.class);
-		ArrayList<StudySpace> olist = new ArrayList<StudySpace>();
-		olist.add(o);
-		i.putExtra("STUDYSPACE", o);
-		startActivity(i);
-	}
-	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
+            i.putExtra("PREFERENCES", (Serializable)p);
+            setResult(RESULT_OK, i);
+            //ends this activity
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
+    public void onFavClick(View v){
+        p.addFavorites(o.getBuildingName()+o.getSpaceName());
+        tabdetails.onFavClick(v);
 
-			Intent i = new Intent();
+        SharedPreferences.Editor editor = favorites.edit();
+        editor.putBoolean(o.getBuildingName()+o.getSpaceName(), true);
+        editor.commit();
+    }
+    
+    public void onRemoveFavClick(View v){
+        p.removeFavorites(o.getBuildingName()+o.getSpaceName());
+        tabdetails.onRemoveFavClick(v);
+        SharedPreferences.Editor editor = favorites.edit();
+        editor.putBoolean(o.getBuildingName()+o.getSpaceName(), false);
+        editor.commit();
+    }
+    
+    public void onCalClick(View v) {
+        addToHistory();
+        tabdetails.onCalClick(v);
+    }
 
-			i.putExtra("PREFERENCES", (Serializable)p);
-			setResult(RESULT_OK, i);
-			//ends this activity
-			finish();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+    public void onReserveClick(View v){
+        addToHistory();
+        tabdetails.onReserveClick(v);
+    }
 
-	public void onFavClick(View v){
-		p.addFavorites(o.getBuildingName()+o.getSpaceName());
-		tabdetails.onFavClick(v);
-
-		SharedPreferences.Editor editor = favorites.edit();
-		editor.putBoolean(o.getBuildingName()+o.getSpaceName(), true);
-		editor.commit();
-	}
-	
-	public void onRemoveFavClick(View v){
-		p.removeFavorites(o.getBuildingName()+o.getSpaceName());
-		tabdetails.onRemoveFavClick(v);
-		SharedPreferences.Editor editor = favorites.edit();
-		editor.putBoolean(o.getBuildingName()+o.getSpaceName(), false);
-		editor.commit();
-	}
-	
-	public void onCalClick(View v) {
-		tabdetails.onCalClick(v);
-
-	}
-
-	public void onReserveClick(View v){
-		tabdetails.onReserveClick(v);
-		
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu, menu);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+    
+    /**
+     * Adds this StudySpace object to the database.
+     */
+    private void addToHistory() {
+        o.setDate(System.currentTimeMillis());
+        DBManager.add(o);
+    }
 
 }

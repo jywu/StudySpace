@@ -3,215 +3,285 @@ package edu.upenn.cis573;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import edu.upenn.cis573.datastructure.Room;
+
+/**
+ * This class stores all of the data regarding a building, such as its type 
+ * (eg. Engineering, Wharton, Library, or Others), maximum occupancy, additional 
+ * features (eg. whiteboard, projector), and an ArrayList of Room objects since 
+ * some buildings can have multiple study rooms.
+ */
 public class StudySpace implements Serializable, Comparable<StudySpace> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	// Constants, need to be public
-	public final static String ENGINEERING = "Engineering";
-	public final static String WHARTON = "Wharton";
-	public final static String LIBRARIES = "Libraries";
-	public final static String OTHER = "Other";
+    // Constants, need to be public
+    public final static String ENGINEERING = "Engineering";
+    public final static String WHARTON = "Wharton";
+    public final static String LIBRARIES = "Libraries";
+    public final static String OTHER = "Other";
 
-	// Attributes
-	private String buildingName;
-	private String spaceName;
-	private double latitude;
-	private double longitude;
-	private int number_of_rooms;
-	private int max_occupancy;
-	private boolean has_whiteboard;
-	private String privacy;
-	private boolean has_computer;
-	private String reserve_type;
-	private boolean has_big_screen;
-	private String comments;
-	private Room[] rooms;
-	
-	private double distance;
+    // Attributes
+    private String  buildingName;
+    private String  spaceName;
+    private String  privacy;
+    private String  reserve_type;
+    private String  comments;
+    private double  latitude;
+    private double  longitude;
+    private double  distance;
+    private int     number_of_rooms;
+    private int     max_occupancy;
+    private boolean has_whiteboard;
+    private boolean has_computer;
+    private boolean has_big_screen;
+    private Room[]  rooms;
+    
+    private long date;
 
-	public StudySpace(String name, double lat, double lon, int num_rooms,
-			String b_name, int max_occ, boolean has_wh, String pri,
-			boolean has_comp, String res_type, boolean has_big_s, String comm,
-			Room[] r) {
-		spaceName = name;
-		latitude = lat;
-		longitude = lon;
-		number_of_rooms = num_rooms;
-		buildingName = b_name;
-		max_occupancy = max_occ;
-		has_whiteboard = has_wh;
-		privacy = pri;
-		has_computer = has_comp;
-		reserve_type = res_type;
-		has_big_screen = has_big_s;
-		comments = comm;
-		rooms = r;
-	}
-	
-	//sort the studyspace based on the distance
-	@Override
-	public int compareTo(StudySpace compareSpace){
-		
-		return (int)(this.distance - compareSpace.distance);
-	
-	}
-	
-	
-	public void setDistance(double d){
-		this.distance = d;
-	}
-	
-	public double getDistance(){
-		return this.distance;
-	}
+    public StudySpace(String name, double lat, double lon, int num_rooms,
+            String b_name, int max_occ, boolean has_wh, String pri,
+            boolean has_comp, String res_type, boolean has_big_s, String comm,
+            Room[] r) {
+        spaceName       = name;
+        latitude        = lat;
+        longitude       = lon;
+        number_of_rooms = num_rooms;
+        buildingName    = b_name;
+        max_occupancy   = max_occ;
+        has_whiteboard  = has_wh;
+        privacy         = pri;
+        has_computer    = has_comp;
+        reserve_type    = res_type;
+        has_big_screen  = has_big_s;
+        comments        = comm;
+        rooms           = r;
+    }
+    
+    public StudySpace() { }
+    
+    //sort the studyspace based on the distance
+    @Override
+    public int compareTo(StudySpace compareSpace){
+        
+        return (int)(this.distance - compareSpace.distance);
+    
+    }
+    
+    public long getDate() {
+        return date;
+    }
 
-	public String getSpaceName() {
-		return spaceName;
-	}
+    public void setDate(long date) {
+        this.date = date;
+    }
+    
+    public void setDistance(double d){
+        this.distance = d;
+    }
+    
+    public double getDistance(){
+        return this.distance;
+    }
 
-	public double getSpaceLatitude() {
-		return latitude;
-	}
+    public String getSpaceName() {
+        return spaceName;
+    }
 
-	public double getSpaceLongitude() {
-		return longitude;
-	}
+    public double getSpaceLatitude() {
+        return latitude;
+    }
 
-	public int getNumberOfRooms() {
-		return number_of_rooms;
-	}
+    public double getSpaceLongitude() {
+        return longitude;
+    }
 
-	public String getBuildingName() {
-		return buildingName;
-	}
+    public int getNumberOfRooms() {
+        return number_of_rooms;
+    }
 
-	public int getMaximumOccupancy() {
-		return max_occupancy;
-	}
+    public String getBuildingName() {
+        return buildingName;
+    }
 
-	public boolean hasWhiteboard() {
-		return has_whiteboard;
-	}
+    public int getMaximumOccupancy() {
+        return max_occupancy;
+    }
 
-	public String getPrivacy() {
-		return privacy;
-	}
+    public boolean hasWhiteboard() {
+        return has_whiteboard;
+    }
 
-	public boolean hasComputer() {
-		return has_computer;
-	}
+    public String getPrivacy() {
+        return privacy;
+    }
 
-	public String getReserveType() {
-		return reserve_type;
-	}
+    public boolean hasComputer() {
+        return has_computer;
+    }
 
-	public boolean has_big_screen() {
-		return has_big_screen;
-	}
+    public String getReserveType() {
+        return reserve_type;
+    }
 
-	public String getComments() {
-		return comments;
-	}
+    public boolean has_big_screen() {
+        return has_big_screen;
+    }
 
-	public Room[] getRooms() {
-		return rooms;
-	}
+    public String getComments() {
+        return comments;
+    }
 
-	// get the list of roomNames as a string
-	public String getRoomNames() {
+    public Room[] getRooms() {
+        return rooms;
+    }
+    
+    public void setBuildingName(String buildingName) {
+        this.buildingName = buildingName;
+    }
 
-		// GSR has a lot of rooms so it's being formatted differently
-		if (getSpaceName().equals("GSR"))
-			return getGSRNames();
-		else {
-			String out = "";
-			for (Room r : getRooms())
-				out = out + r.getRoomName() + " ";
-			return out;
-		}
-	}
+    public void setSpaceName(String spaceName) {
+        this.spaceName = spaceName;
+    }
 
-	public String getGSRNames() {
-		
-		System.out.println("We got a GSRNAMES ----- What is it!-----");
-		ArrayList<Integer> F = new ArrayList<Integer>();
-		ArrayList<Integer> G = new ArrayList<Integer>();
-		ArrayList<Integer> sec = new ArrayList<Integer>();
-		ArrayList<Integer> third = new ArrayList<Integer>();
-		ArrayList<String> oth = new ArrayList<String>();
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 
-		String out = "";
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
-		for (Room r : getRooms()) {
-			char floor = r.getRoomName().charAt(0);
+    public void setNumber_of_rooms(int number_of_rooms) {
+        this.number_of_rooms = number_of_rooms;
+    }
 
-			int num = Integer.parseInt(r.getRoomName().substring(1));
+    public void setMax_occupancy(int max_occupancy) {
+        this.max_occupancy = max_occupancy;
+    }
 
-			if (floor == 'F')
-				F.add(num);
-			else if (floor == 'G')
-				G.add(num);
-			else if (floor == '2')
-				sec.add(num);
-			else if (floor == '3')
-				third.add(num);
-			else
-				oth.add(r.getRoomName());
-		}
+    public void setHas_whiteboard(boolean has_whiteboard) {
+        this.has_whiteboard = has_whiteboard;
+    }
 
-		out = out + sortToString(F, "F") + "\n\n"; // string builders?
-		out = out + sortToString(G, "G") + "\n\n";
-		out = out + sortToString(sec, "2") + "\n\n";
-		out = out + sortToString(third, "3") + "\n";
-		for (String s : oth)
-			out = out + s + " ";
-		return out;
-	}
+    public void setPrivacy(String privacy) {
+        this.privacy = privacy;
+    }
 
-	private String sortToString(ArrayList<Integer> arr, String floor) {
-		// Counting Sort
-		int[] C = new int[100];
-		ArrayList<Integer> S = new ArrayList<Integer>();
+    public void setHas_computer(boolean has_computer) {
+        this.has_computer = has_computer;
+    }
 
-		for (int i = 0; i < arr.size(); i++) {
-			C[arr.get(i)]++;
-			S.add(null);
-		}
+    public void setReserve_type(String reserve_type) {
+        this.reserve_type = reserve_type;
+    }
 
-		for (int k = 1; k <= 99; k++) {
-			C[k] += C[k - 1];
-		}
+    public void setHas_big_screen(boolean has_big_screen) {
+        this.has_big_screen = has_big_screen;
+    }
 
-		for (int j = arr.size() - 1; j >= 0; j--) {
-			S.set(C[arr.get(j)] - 1, arr.get(j));
-			C[arr.get(j)]--; // Should never have duplicates
-		}
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
-		String out = "";
+    public void setRooms(Room[] rooms) {
+        this.rooms = rooms;
+    }
 
-		for (int i : S) {
-			out = out + floor + Integer.toString(i) + " ";
-		}
-		return out;
-	}
+    // get the list of roomNames as a string
+    public String getRoomNames() {
 
-	public String getBuildingType() {
+        // GSR has a lot of rooms so it's being formatted differently
+        if (getSpaceName().equals("GSR"))
+            return getGSRNames();
+        else {
+            String out = "";
+            for (Room r : getRooms())
+                out = out + r.getRoomName() + " ";
+            return out;
+        }
+    }
 
-		if (buildingName.equals("Towne Building")
-				|| buildingName.equals("Levine Hall")
-				|| buildingName.equals("Skirkanich Hall")) {
-			return ENGINEERING;
-		} else if (buildingName.equals("Jon M. Huntsman Hall")) {
-			return WHARTON;
-		} else if (buildingName.equals("Van Pelt Library")
-				|| buildingName.equals("Biomedical Library")
-				|| buildingName.equals("Lippincott Library")
-				|| buildingName.equals("Museum Library")) {
-			return LIBRARIES;
-		} else {
-			return OTHER;
-		}
-	}
+    public String getGSRNames() {
+        
+        System.out.println("We got a GSRNAMES ----- What is it!-----");
+        ArrayList<Integer> F = new ArrayList<Integer>();
+        ArrayList<Integer> G = new ArrayList<Integer>();
+        ArrayList<Integer> sec = new ArrayList<Integer>();
+        ArrayList<Integer> third = new ArrayList<Integer>();
+        ArrayList<String> oth = new ArrayList<String>();
+
+        String out = "";
+
+        for (Room r : getRooms()) {
+            char floor = r.getRoomName().charAt(0);
+
+            int num = Integer.parseInt(r.getRoomName().substring(1));
+
+            if (floor == 'F')
+                F.add(num);
+            else if (floor == 'G')
+                G.add(num);
+            else if (floor == '2')
+                sec.add(num);
+            else if (floor == '3')
+                third.add(num);
+            else
+                oth.add(r.getRoomName());
+        }
+
+        out = out + sortToString(F, "F") + "\n\n"; // string builders?
+        out = out + sortToString(G, "G") + "\n\n";
+        out = out + sortToString(sec, "2") + "\n\n";
+        out = out + sortToString(third, "3") + "\n";
+        for (String s : oth)
+            out = out + s + " ";
+        return out;
+    }
+
+    private String sortToString(ArrayList<Integer> arr, String floor) {
+        // Counting Sort
+        int[] C = new int[100];
+        ArrayList<Integer> S = new ArrayList<Integer>();
+
+        for (int i = 0; i < arr.size(); i++) {
+            C[arr.get(i)]++;
+            S.add(null);
+        }
+
+        for (int k = 1; k <= 99; k++) {
+            C[k] += C[k - 1];
+        }
+
+        for (int j = arr.size() - 1; j >= 0; j--) {
+            S.set(C[arr.get(j)] - 1, arr.get(j));
+            C[arr.get(j)]--; // Should never have duplicates
+        }
+
+        String out = "";
+
+        for (int i : S) {
+            out = out + floor + Integer.toString(i) + " ";
+        }
+        return out;
+    }
+
+    public String getBuildingType() {
+
+        if (buildingName.equals("Towne Building")
+                || buildingName.equals("Levine Hall")
+                || buildingName.equals("Skirkanich Hall")) {
+            return ENGINEERING;
+        } else if (buildingName.equals("Jon M. Huntsman Hall")) {
+            return WHARTON;
+        } else if (buildingName.equals("Van Pelt Library")
+                || buildingName.equals("Biomedical Library")
+                || buildingName.equals("Lippincott Library")
+                || buildingName.equals("Museum Library")) {
+            return LIBRARIES;
+        } else {
+            return OTHER;
+        }
+    }
 
 }
