@@ -139,6 +139,7 @@ public class StudySpaceDetails extends FragmentActivity {
 
 	public void onReserveClick(View v){
 		tabdetails.onReserveClick(v);
+		
 	}
 
 	@Override

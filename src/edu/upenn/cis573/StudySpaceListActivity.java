@@ -47,6 +47,7 @@ public class StudySpaceListActivity extends ListActivity {
 	public static final int ACTIVITY_SearchActivity = 2;
 	public static final int ACTIVITY_ViewRooms = 3;
 	private SearchOptions searchOptions; // create a default searchoption later
+	private SearchOptions searchopt;
 	private boolean favSelected;
 	private Preferences preferences;
 
@@ -138,6 +139,8 @@ public class StudySpaceListActivity extends ListActivity {
 		case ACTIVITY_SearchActivity:
 			searchOptions = (SearchOptions) intent
 					.getParcelableExtra("SEARCH_OPTIONS");
+			searchopt = (SearchOptions) intent
+					.getSerializableExtra("SEARCH_OPTIONS");
 			ImageView image = (ImageView) this
 					.findViewById(R.id.favorite_button);
 			image.setImageResource(R.color.yellow);
@@ -344,6 +347,8 @@ public class StudySpaceListActivity extends ListActivity {
 					Intent i = new Intent(getContext(), StudySpaceDetails.class);
 					i.putExtra("STUDYSPACE", o);
 					i.putExtra("PREFERENCES", preferences);
+					//i.putExtra("SEARCHOPT", searchopt);
+					
 					startActivityForResult(i,
 							StudySpaceListActivity.ACTIVITY_ViewSpaceDetails);
 					
