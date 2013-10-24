@@ -17,6 +17,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.widget.LinearLayout;
 
 import com.google.android.maps.GeoPoint;
@@ -34,7 +35,7 @@ import edu.upenn.cis573.util.ConnectionDetector;
  * class, except that it plots an individual room for a StudySpace 
  * on a map.
  */
-public class CustomMap extends MapActivity {
+public class CustomMap extends FragmentActivity {
 
     LinearLayout linearLayout;
     MapView mapView;
@@ -142,7 +143,6 @@ public class CustomMap extends MapActivity {
 
     }
 
-    @Override
     protected boolean isRouteDisplayed() {
         return false;
     }

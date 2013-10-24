@@ -19,6 +19,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.widget.LinearLayout;
 
@@ -38,8 +39,8 @@ import edu.upenn.cis573.util.ConnectionDetector;
  * using the Google Maps API and an ArrayList of StudySpace objects 
  * that it is passed from the StudySpaceListActivity class.
  */
-public class CustomBuildingMap extends MapActivity {
-
+public class CustomBuildingMap extends FragmentActivity {
+	
     LinearLayout linearLayout;
     MapView mapView;
     MapController mc;
@@ -161,7 +162,6 @@ public class CustomBuildingMap extends MapActivity {
 
     }
 
-    @Override
     protected boolean isRouteDisplayed() {
         return false;
     }

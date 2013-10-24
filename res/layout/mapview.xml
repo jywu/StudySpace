@@ -4,11 +4,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
+    <!-- 
     <com.google.android.maps.MapView
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:enabled="true"
         android:clickable="true"
-        android:apiKey="AIzaSyBuuAeg00puV_KcPc3rZFUPuYLYnBpecI8" />
+        android:apiKey="AIzaSyD72JUMDOBm_VIL-wBHnEwE6Icdqghgm0U" />
+     -->
+     
+       <fragment
+        android:id="@+id/mapview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.SupportMapFragment" />
+    
 </LinearLayout>
