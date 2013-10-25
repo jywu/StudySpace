@@ -93,10 +93,10 @@ public class StudySpaceDetails extends FragmentActivity {
     }
 
     public void onMapClick(View v){
-        Intent i = new Intent(this, CustomMap.class);
+        Intent i = new Intent(this, CustomBuildingMap.class);
         ArrayList<StudySpace> olist = new ArrayList<StudySpace>();
         olist.add(o);
-        i.putExtra("STUDYSPACE", o);
+        i.putExtra("STUDYSPACELIST", olist);
         startActivity(i);
     }
     

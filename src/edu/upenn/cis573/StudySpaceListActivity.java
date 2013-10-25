@@ -340,7 +340,7 @@ public class StudySpaceListActivity extends ListActivity {
         if (arr.isEmpty()) {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                    getBaseContext());
+                    this);
             // set title
             alertDialogBuilder.setTitle("No Results Found!");
 
