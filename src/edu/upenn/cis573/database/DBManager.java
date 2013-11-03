@@ -41,12 +41,43 @@ public class DBManager {
     	values.put(DBHelper.COLUMN_NAME_HASBIGSCREEN,  history.has_big_screen());
     	values.put(DBHelper.COLUMN_NAME_COMMENTS,      history.getComments());
     	values.put(DBHelper.COLUMN_NAME_ROOMNAME,      history.getRooms()[0].getRoomName());
+    	values.put(DBHelper.COLUMN_NAME_NOTE,      "");
 
     	// Insert the new row, returning the primary key value of the new row
     	db.insert(DBHelper.TABLE_NAME, null, values);
     	Log.i("Database", "Entry written to database: " + 
     	        history.getBuildingName() + " " + history.getSpaceName());
     }  
+    
+    
+    
+    public static int updateDb(String noteText){  
+    	// ArrayList<StudySpace> histories = new ArrayList<StudySpace>();  
+         Cursor c = queryTheCursor(true);
+         c.moveToFirst();
+         
+         
+        ContentValues values = new ContentValues();
+     	values.put(DBHelper.COLUMN_NAME_DATE,          c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_DATE)));
+     	values.put(DBHelper.COLUMN_NAME_BUILDINGNAME,  c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_BUILDINGNAME)));
+     	values.put(DBHelper.COLUMN_NAME_SPACENAME,     c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_SPACENAME)));
+     	values.put(DBHelper.COLUMN_NAME_LATITUDE,      c.getDouble(c.getColumnIndex(DBHelper.COLUMN_NAME_LATITUDE)));
+     	values.put(DBHelper.COLUMN_NAME_LONGITUDE,     c.getDouble(c.getColumnIndex(DBHelper.COLUMN_NAME_LONGITUDE)));
+     	values.put(DBHelper.COLUMN_NAME_ROOMNUM,       c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_ROOMNUM)));
+     	values.put(DBHelper.COLUMN_NAME_MAXOCCUPANCY,  c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_MAXOCCUPANCY)));
+     	values.put(DBHelper.COLUMN_NAME_HASWHITEBOARD, parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASWHITEBOARD))));
+     	values.put(DBHelper.COLUMN_NAME_PRIVACY,       c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_PRIVACY)));
+     	values.put(DBHelper.COLUMN_NAME_HASCOMPUTER,   parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASCOMPUTER))));
+     	values.put(DBHelper.COLUMN_NAME_RESERVETYPE,   c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_RESERVETYPE)));
+     	values.put(DBHelper.COLUMN_NAME_HASBIGSCREEN,  parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASBIGSCREEN))));
+     	values.put(DBHelper.COLUMN_NAME_COMMENTS,      c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_COMMENTS)));
+     	values.put(DBHelper.COLUMN_NAME_ROOMNAME,      new Room[] {new Room(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_ROOMNAME)))}[0].getRoomName());
+     	values.put(DBHelper.COLUMN_NAME_NOTE,      noteText);
+     	 
+     	String[] args = {String.valueOf(c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_DATE)))};  
+        return db.update(DBHelper.TABLE_NAME, values, "date=?",args);     
+    }  
+    
     
     /** 
      * Queries all histories, return an ArrayList of StudySpace objects.
@@ -56,6 +87,7 @@ public class DBManager {
         ArrayList<StudySpace> histories = new ArrayList<StudySpace>();  
         Cursor c = queryTheCursor(true);
         c.moveToFirst();
+       
         while (!c.isAfterLast()) {  
             StudySpace history = new StudySpace();  
             history.setDate(c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_DATE)));
@@ -72,6 +104,7 @@ public class DBManager {
             history.setHas_big_screen(parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASBIGSCREEN))));
             history.setComments(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_COMMENTS)));
             history.setRooms(new Room[] {new Room(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_ROOMNAME)))});
+            history.setNote(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_NOTE)));
             histories.add(history);
             c.moveToNext();
         }

@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 public class HistoryTabDetails extends Fragment {
     private StudySpace o;
+    
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -142,6 +143,11 @@ public class HistoryTabDetails extends Fragment {
         //displays date of last reservation
         TextView lastReservation = (TextView) getView().findViewById(R.id.last_reservation_time);
         lastReservation.setText(new Date(o.getDate()).toString());
+        
+        TextView showNoteText = (TextView)getView().findViewById(R.id.note);
+        showNoteText.setText(o.getNote());
+        
+        
     }
     
     @Override

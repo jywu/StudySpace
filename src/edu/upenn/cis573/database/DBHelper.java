@@ -25,6 +25,9 @@ public class DBHelper extends SQLiteOpenHelper{
     public  static final String COLUMN_NAME_HASBIGSCREEN  = "has_big_screen";
     public  static final String COLUMN_NAME_COMMENTS      = "comments";
     public  static final String COLUMN_NAME_ROOMNAME      = "roomName";
+    public  static final String COLUMN_NAME_NOTE      = "notes";
+    
+    
       
     public DBHelper(Context context) {  
         //CursorFactory is set to null, as default  
@@ -49,7 +52,8 @@ public class DBHelper extends SQLiteOpenHelper{
                 COLUMN_NAME_RESERVETYPE   + " TEXT, " +
                 COLUMN_NAME_HASBIGSCREEN  + " INTEGER, " +
                 COLUMN_NAME_COMMENTS      + " TEXT, " +
-                COLUMN_NAME_ROOMNAME      + " TEXT)");  
+                COLUMN_NAME_ROOMNAME      + " TEXT, " +
+                COLUMN_NAME_NOTE      + " TEXT)");  
     }  
   
     //If DATABASE_VERSION has been modified, system would find the difference of versions, onUpgrade would be called  

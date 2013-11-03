@@ -302,6 +302,11 @@ public class SearchActivity extends Activity {
         startActivity(intent);
     }
     
+    public void onNoteButtonClick(View view){
+    	Intent intent = new Intent(this, EditNoteActivity.class);
+        startActivityForResult(intent, -1);
+    }
+    
     //XXX
     //action to perform history button click
     public void onHistoryButtonClick(View view) {

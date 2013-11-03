@@ -36,6 +36,7 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
     private boolean has_computer;
     private boolean has_big_screen;
     private Room[]  rooms;
+    private String note;
     
     private long date;
 
@@ -282,6 +283,14 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
         } else {
             return OTHER;
         }
+    }
+    
+    public String getNote(){
+    	return this.note;
+    }
+    
+    public void setNote(String note){
+    	this.note = note;
     }
 
 }
