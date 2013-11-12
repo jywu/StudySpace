@@ -68,6 +68,10 @@ public class SearchActivity extends Activity {
 
     private Dialog mCurrentDialog;
     
+    private TimePicker startTimePicker;
+    private TimePicker endTimePicker;
+    private DatePicker datePicker;
+    
     /*
      ******************************************
      *            Other members
@@ -303,6 +307,7 @@ public class SearchActivity extends Activity {
     }
     
     public void onNoteButtonClick(View view){
+        System.out.println("Click the note button!");
     	Intent intent = new Intent(this, EditNoteActivity.class);
         startActivityForResult(intent, -1);
     }
@@ -310,6 +315,7 @@ public class SearchActivity extends Activity {
     //XXX
     //action to perform history button click
     public void onHistoryButtonClick(View view) {
+        System.out.println("Click the history button!");
         Intent intent = new Intent(this, HistoryListActivity.class);
         startActivityForResult(intent, -1);
     }
@@ -547,6 +553,21 @@ public class SearchActivity extends Activity {
         // display the time in the text field
         updateDateText();
     }
+    
+    private static int getTime(TimePicker picker) {
+        int hour   = picker.getCurrentHour();
+        int minute = picker.getCurrentMinute();
+        String time = Integer.toString(hour) + Integer.toString(minute);
+        return Integer.parseInt(time);
+    }
+    
+    private static int getDate(DatePicker picker) {
+        int day   = picker.getDayOfMonth();
+        int month = picker.getMonth();
+        int year = picker.getYear();
+        String date = Integer.toString(year) + Integer.toString(month) + Integer.toString(day);
+        return Integer.parseInt(date);
+    }
 
     private static String pad(int c) {
         if (c >= 10)
@@ -588,6 +609,7 @@ public class SearchActivity extends Activity {
         public void onClick(View view) {
             mCurrentDialog.cancel();
             mCurrentDialog = null;
+            int startTime = getTime(startTimePicker);
         }
     };
 
@@ -596,6 +618,7 @@ public class SearchActivity extends Activity {
         public void onClick(View view) {
             mCurrentDialog.cancel();
             mCurrentDialog = null;
+            int endTime = getTime(endTimePicker);
         }
     };
 
@@ -604,6 +627,7 @@ public class SearchActivity extends Activity {
         public void onClick(View view) {
             mCurrentDialog.cancel();
             mCurrentDialog = null;
+            int date = getDate(datePicker);
         }
     };
 
@@ -615,7 +639,7 @@ public class SearchActivity extends Activity {
         mCurrentDialog.setTitle("Pick a start time");
         mCurrentDialog.show();
 
-        TimePicker startTimePicker = (TimePicker)mCurrentDialog.findViewById(R.id.startTimePicker);
+        startTimePicker = (TimePicker)mCurrentDialog.findViewById(R.id.startTimePicker);
         startTimePicker.setCurrentHour(currentHour);
         startTimePicker.setCurrentMinute(currentMinute);
         startTimePicker.setOnTimeChangedListener(mStartTimeChangedListener);
@@ -633,7 +657,7 @@ public class SearchActivity extends Activity {
         mCurrentDialog.setTitle("Pick an end time");
         mCurrentDialog.show();
 
-        TimePicker endTimePicker = (TimePicker)mCurrentDialog.findViewById(R.id.endTimePicker);
+        endTimePicker = (TimePicker)mCurrentDialog.findViewById(R.id.endTimePicker);
         endTimePicker.setCurrentHour(currentHour);
         endTimePicker.setCurrentMinute(currentMinute);
         endTimePicker.setOnTimeChangedListener(mEndTimeChangedListener);
@@ -651,7 +675,7 @@ public class SearchActivity extends Activity {
         mCurrentDialog.setTitle("Pick a date");
         mCurrentDialog.show();
 
-        DatePicker datePicker = (DatePicker)mCurrentDialog.findViewById(R.id.datePicker);
+        datePicker = (DatePicker)mCurrentDialog.findViewById(R.id.datePicker);
         datePicker.init(currentYear, currentMonth, currentDay, mDateChangedListener);
         datePicker.setDescendantFocusability(DatePicker.FOCUS_BLOCK_DESCENDANTS);
 

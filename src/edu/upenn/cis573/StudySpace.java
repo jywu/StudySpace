@@ -37,6 +37,8 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
     private boolean has_big_screen;
     private Room[]  rooms;
     private String note;
+    private int startTime;
+    private int endTime;
     
     private long date;
 
@@ -59,6 +61,22 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
         rooms           = r;
     }
     
+    protected int getStartTime() {
+        return startTime;
+    }
+
+    protected void setStartTime(int startTime) {
+        this.startTime = startTime;
+    }
+
+    protected int getEndTime() {
+        return endTime;
+    }
+
+    protected void setEndTime(int endTime) {
+        this.endTime = endTime;
+    }
+
     public StudySpace() { }
     
     //sort the studyspace based on the distance

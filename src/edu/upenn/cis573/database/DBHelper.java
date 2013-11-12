@@ -25,7 +25,9 @@ public class DBHelper extends SQLiteOpenHelper{
     public  static final String COLUMN_NAME_HASBIGSCREEN  = "has_big_screen";
     public  static final String COLUMN_NAME_COMMENTS      = "comments";
     public  static final String COLUMN_NAME_ROOMNAME      = "roomName";
-    public  static final String COLUMN_NAME_NOTE      = "notes";
+    public  static final String COLUMN_NAME_NOTE          = "notes";
+    public  static final String COLUMN_NAME_STARTTIME     = "startTime";
+    public  static final String COLUMN_NAME_ENDTIME       = "endTime";
     
     
       
@@ -53,6 +55,8 @@ public class DBHelper extends SQLiteOpenHelper{
                 COLUMN_NAME_HASBIGSCREEN  + " INTEGER, " +
                 COLUMN_NAME_COMMENTS      + " TEXT, " +
                 COLUMN_NAME_ROOMNAME      + " TEXT, " +
+                COLUMN_NAME_STARTTIME     + " INTEGER, " +
+                COLUMN_NAME_ENDTIME       + " INTEGER, " +
                 COLUMN_NAME_NOTE      + " TEXT)");  
     }  
   

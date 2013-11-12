@@ -18,16 +18,24 @@ public class EditNoteActivity extends Activity {
 
 	Button saveButton;
 	EditText  editNoteText;
-	
-	
+	StudySpace history;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_note);
+		// check if this is a new note or just showing a saved note
+		saveButton = (Button)findViewById(R.id.savebutton);
+		editNoteText  = (EditText)findViewById(R.id.editnote1);
 		
-		 saveButton = (Button)findViewById(R.id.savebutton);
-		 editNoteText  = (EditText)findViewById(R.id.editnote1);	   
+		Bundle extras = getIntent().getExtras();		
+		if(extras != null) {
+		    String text = extras.getString("NOTE_TEXT");
+		    history = (StudySpace)extras.getSerializable("HISTORY");
+		    editNoteText.setEnabled(false);
+		    saveButton.setEnabled(false);
+	            editNoteText.setText(text);
+		}	   
 	}
 	
 	public void onSaveNote(View view){

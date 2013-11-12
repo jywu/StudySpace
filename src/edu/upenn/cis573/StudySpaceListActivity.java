@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -456,7 +457,21 @@ public class StudySpaceListActivity extends ListActivity {
                     proj.setVisibility(View.VISIBLE);
             }
             
+            View noteButton = ((ViewGroup) v).getChildAt(0);
+            System.out.println(noteButton.getId());
+            //action to perform note button click
+            noteButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //read note
+                    //Intent intent = new Intent(this, EditNoteActivity.class);
+                    //startActivityForResult(intent, -1);
+                }
+            });
+            
+            
             //defines actions for on-click of each entry
+
             v.setOnClickListener(new OnClickListener(){
                 @Override
                 public void onClick(View v) {

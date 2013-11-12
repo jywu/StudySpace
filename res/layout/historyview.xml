@@ -5,7 +5,7 @@
     android:background="@drawable/bgrepeat"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
@@ -20,19 +20,22 @@
         <Button
             android:id="@+id/clearHistoryButton"
             style="?android:attr/buttonStyleSmall"
+            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="208dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
             android:background="@color/lightblue"
             android:clickable="true"
             android:padding="10dp"
             android:text="@string/clear_history"
             android:textColor="@color/white"
-            android:textSize="15sp"
+            android:textSize="10sp"
             android:textStyle="bold" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -51,7 +54,7 @@
                 android:background="@drawable/fbutton"
                 android:clickable="true"
                 android:gravity="center"
-                android:onClick="onFavClick"
+                android:onClick="onClickStats"
                 android:padding="10dp"
                 android:text="@string/statistics"
                 android:textColor="@color/white"
@@ -81,6 +84,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/mapViewButton"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"

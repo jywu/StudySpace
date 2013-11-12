@@ -28,6 +28,7 @@
                 android:background="@color/darkgrey" />
 
             <TextView
+                android:id="@+id/info"
                 android:layout_width="fill_parent"
                 android:layout_height="37dp"
                 android:gravity="center"

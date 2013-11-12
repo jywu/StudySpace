@@ -8,6 +8,7 @@ import edu.upenn.cis573.R;
 import edu.upenn.cis573.database.DBManager;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,12 +33,15 @@ public class HistoryListActivity extends ListActivity{
 
     private Button clearHistoryButton;
     private TextView searchButton;
+    private ImageView statsButton;
     private ArrayList<StudySpace> historyList;
     private HistoryListAdapter historyListAdapter;
     
     public static final int ACTIVITY_ViewSpaceDetails = 1;
     public static final int ACTIVITY_SearchActivity = 2;
     public static final int ACTIVITY_ViewRooms = 3;
+    public static final int ACTIVITY_ViewNote = 4;
+    public static final int ACTIVITY_ViewStats = 5;
     
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +84,18 @@ public class HistoryListActivity extends ListActivity{
             }
         });
     }
+    
+    public void onClickStats(View v) {
+        showStatsDialog();
+    }
+    
+    public void showStatsDialog() {
+        Stats stats = new Stats();
+        new Builder(this)
+        .setTitle("Statistics")
+        .setMessage(stats.getResult())
+        .show();
+    }
 
     //XXX defines click behaviors for the MapView button
     public void onMapViewClickHistory(View view) {
@@ -120,6 +136,13 @@ public class HistoryListActivity extends ListActivity{
         builder.create().show();
     }
     
+    public void showNoNotesDialogue(){
+        new Builder(this)
+        .setTitle("No notes")
+        .setMessage("No notes for this reservation!")
+        .show();
+    }
+    
     private class HistoryListAdapter extends ArrayAdapter<StudySpace> {
 
         private ArrayList<StudySpace> list_items;
@@ -143,20 +166,20 @@ public class HistoryListActivity extends ListActivity{
                 v = vi.inflate(R.layout.sslistitem, null);
             }
 
-            final StudySpace o = list_items.get(position);
-            if (o != null) {
+            final StudySpace studySpace = list_items.get(position);
+            if (studySpace != null) {
 
                 TextView tt = (TextView) v.findViewById(R.id.nametext);
                 TextView bt = (TextView) v.findViewById(R.id.roomtext);
                 if (tt != null) {
-                    tt.setText(o.getBuildingName() + " - " + o.getSpaceName());
+                    tt.setText(studySpace.getBuildingName() + " - " + studySpace.getSpaceName());
                 }
                 if (bt != null) {
-                    if (o.getNumberOfRooms() == 1) {
-                        bt.setText(o.getRooms()[0].getRoomName());
+                    if (studySpace.getNumberOfRooms() == 1) {
+                        bt.setText(studySpace.getRooms()[0].getRoomName());
                     } else {
-                        bt.setText(o.getRooms()[0].getRoomName() + " (and "
-                                + String.valueOf(o.getNumberOfRooms() - 1)
+                        bt.setText(studySpace.getRooms()[0].getRoomName() + " (and "
+                                + String.valueOf(studySpace.getNumberOfRooms() - 1)
                                 + " others)");
                     }
                 }
@@ -164,13 +187,13 @@ public class HistoryListActivity extends ListActivity{
                 int resID;
                 if (image != null) {
                     Resources resource = getResources();
-                    if (o.getBuildingType().equals(StudySpace.ENGINEERING))
+                    if (studySpace.getBuildingType().equals(StudySpace.ENGINEERING))
                         resID = resource.getIdentifier("engiicon", "drawable",
                                 getPackageName());
-                    else if (o.getBuildingType().equals(StudySpace.WHARTON))
+                    else if (studySpace.getBuildingType().equals(StudySpace.WHARTON))
                         resID = resource.getIdentifier("whartonicon",
                                 "drawable", getPackageName());
-                    else if (o.getBuildingType().equals(StudySpace.LIBRARIES))
+                    else if (studySpace.getBuildingType().equals(StudySpace.LIBRARIES))
                         resID = resource.getIdentifier("libicon", "drawable",
                                 getPackageName());
                     else
@@ -182,38 +205,62 @@ public class HistoryListActivity extends ListActivity{
                 ImageView wb = (ImageView) v.findViewById(R.id.wb);
                 ImageView comp = (ImageView) v.findViewById(R.id.comp);
                 ImageView proj = (ImageView) v.findViewById(R.id.proj);
-                if (priv != null && o.getPrivacy().equals("S"))
+                if (priv != null && studySpace.getPrivacy().equals("S"))
                     priv.setVisibility(View.INVISIBLE);
                 else
                     priv.setVisibility(View.VISIBLE);
-                if (wb != null && !o.hasWhiteboard())
+                if (wb != null && !studySpace.hasWhiteboard())
                     wb.setVisibility(View.INVISIBLE);
                 else
                     wb.setVisibility(View.VISIBLE);
-                if (comp != null && !o.hasComputer())
+                if (comp != null && !studySpace.hasComputer())
                     comp.setVisibility(View.INVISIBLE);
                 else
                     comp.setVisibility(View.VISIBLE);
-                if (proj != null && !o.has_big_screen())
+                if (proj != null && !studySpace.has_big_screen())
                     proj.setVisibility(View.INVISIBLE);
                 else
                     proj.setVisibility(View.VISIBLE);
             }
             
-            //defines actions for on-click of each entry
-            v.setOnClickListener(new android.view.View.OnClickListener(){
+            
+          //defines actions for on-click of each note button
+            View note = v.findViewById(R.id.ViewNoteButton);
+            note.setOnClickListener(new android.view.View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    String noteText = DBManager.query(studySpace);
+                    if(noteText.equals("")) {
+                        showNoNotesDialogue();
+                        return;
+                    }
+                    Intent i = new Intent(getContext(), EditNoteActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putString("NOTE_TEXT", noteText);
+                    extras.putSerializable("HISTORY", studySpace);  
+                    extras.putBoolean("ISVIEW", true);
+                    i.putExtras(extras);
+                    startActivityForResult(i,
+                            HistoryListActivity.ACTIVITY_ViewNote);
+                }
+                
+            });
+            
+          //defines actions for on-click of each entry
+            View entry = v.findViewById(R.id.entry);           
+            entry.setOnClickListener(new android.view.View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(getContext(), HistoryDetails.class);
-                    i.putExtra("STUDYSPACE", o);
+                    i.putExtra("STUDYSPACE", studySpace);
                     startActivityForResult(i,
-                            HistoryListActivity.ACTIVITY_ViewSpaceDetails);
-                    
+                            HistoryListActivity.ACTIVITY_ViewSpaceDetails);                  
                 }
             });
             
             //defines actions for long on-click of each entry
-            v.setOnLongClickListener(new OnLongClickListener() {
+            entry.setOnLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
@@ -226,11 +273,11 @@ public class HistoryListActivity extends ListActivity{
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             Intent k = null;
-                                            if(o.getBuildingType().equals(StudySpace.WHARTON)) {
+                                            if(studySpace.getBuildingType().equals(StudySpace.WHARTON)) {
                                                 k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://spike.wharton.upenn.edu/Calendar/gsr.cfm?"));
-                                            } else if(o.getBuildingType().equals(StudySpace.ENGINEERING)) {
+                                            } else if(studySpace.getBuildingType().equals(StudySpace.ENGINEERING)) {
                                                 k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.pennkey.upenn.edu/login/?factors=UPENN.EDU&cosign-seas-www_userpages-1&https://www.seas.upenn.edu/about-seas/room-reservation/form.php"));
-                                            } else if(o.getBuildingType().equals(StudySpace.LIBRARIES)) {
+                                            } else if(studySpace.getBuildingType().equals(StudySpace.LIBRARIES)) {
                                                 k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.library.upenn.edu/cgi-bin/login?authz=grabit&app=http://bookit.library.upenn.edu/cgi-bin/rooms/rooms"));
                                             } else {
                                                 Calendar cal = Calendar.getInstance(Locale.US);              
@@ -238,7 +285,7 @@ public class HistoryListActivity extends ListActivity{
                                                 k.setType("vnd.android.cursor.item/event");
                                                 k.putExtra("title", "PennStudySpaces Reservation confirmed. ");
                                                 k.putExtra("description", "Supported by PennStudySpaces");
-                                                k.putExtra("eventLocation", o.getBuildingName()+" - "+o.getRooms()[0].getRoomName());
+                                                k.putExtra("eventLocation", studySpace.getBuildingName()+" - "+studySpace.getRooms()[0].getRoomName());
                                                 k.putExtra("beginTime", cal.getTimeInMillis());
                                                 k.putExtra("endTime", cal.getTimeInMillis()+60*60*1000);
                                             }

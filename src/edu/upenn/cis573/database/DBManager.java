@@ -1,10 +1,10 @@
 package edu.upenn.cis573.database;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import edu.upenn.cis573.StudySpace;
 import edu.upenn.cis573.datastructure.Room;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -52,12 +52,13 @@ public class DBManager {
     
     
     public static int updateDb(String noteText){  
-    	// ArrayList<StudySpace> histories = new ArrayList<StudySpace>();  
+    	 //ArrayList<StudySpace> histories = new ArrayList<StudySpace>();  
          Cursor c = queryTheCursor(true);
          c.moveToFirst();
          
          
         ContentValues values = new ContentValues();
+        
      	values.put(DBHelper.COLUMN_NAME_DATE,          c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_DATE)));
      	values.put(DBHelper.COLUMN_NAME_BUILDINGNAME,  c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_BUILDINGNAME)));
      	values.put(DBHelper.COLUMN_NAME_SPACENAME,     c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_SPACENAME)));
@@ -72,7 +73,8 @@ public class DBManager {
      	values.put(DBHelper.COLUMN_NAME_HASBIGSCREEN,  parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASBIGSCREEN))));
      	values.put(DBHelper.COLUMN_NAME_COMMENTS,      c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_COMMENTS)));
      	values.put(DBHelper.COLUMN_NAME_ROOMNAME,      new Room[] {new Room(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_ROOMNAME)))}[0].getRoomName());
-     	values.put(DBHelper.COLUMN_NAME_NOTE,      noteText);
+        values.put(DBHelper.COLUMN_NAME_NOTE,     noteText);
+
      	 
      	String[] args = {String.valueOf(c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_DATE)))};  
         return db.update(DBHelper.TABLE_NAME, values, "date=?",args);     
@@ -111,6 +113,28 @@ public class DBManager {
         c.close();
         Log.i("Database", "Entries read from database (size: " + histories.size() + ").");
         return histories;  
+    }  
+    
+    
+    /** 
+     * Queries a given history, return note associated with this history.
+     * @return a String containing note text. 
+     */  
+    public static String query(StudySpace history) {  
+        ArrayList<StudySpace> histories = query(); 
+        Iterator<StudySpace> it = histories.iterator();
+        String noteText;
+        while (it.hasNext()) {
+            StudySpace current = it.next();
+            if(current.getDate() == history.getDate()
+                    && current.getSpaceName().equals(history.getSpaceName())
+                    && current.getBuildingName().equals(history.getBuildingName())) {
+                noteText = current.getNote();
+                Log.i("Database", "Note read from database (length: " + noteText.length() + ").");
+                return noteText;
+            }
+        }
+        return null;
     }  
       
     /** 
