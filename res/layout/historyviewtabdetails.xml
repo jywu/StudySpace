@@ -155,13 +155,22 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-            <TextView 
+            <EditText 
                 android:id="@+id/note"
 	            android:layout_width="300dp"
 	            android:layout_height="wrap_content"
 	            android:layout_marginTop="10dp"
 	            android:orientation="horizontal" />
+            
+             
         </LinearLayout>
+        
+        <Button
+            android:id="@+id/savenote1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Save" />
         
     </LinearLayout>
 

@@ -2,6 +2,7 @@ package edu.upenn.cis573;
 
 import java.util.Date;
 
+import edu.upenn.cis573.database.DBManager;
 import edu.upenn.cis573.datastructure.Room;
 
 import android.app.Activity;
@@ -12,11 +13,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class HistoryTabDetails extends Fragment {
     private StudySpace o;
+    private EditText showNoteText;
     
 
     @Override
@@ -144,11 +148,18 @@ public class HistoryTabDetails extends Fragment {
         TextView lastReservation = (TextView) getView().findViewById(R.id.last_reservation_time);
         lastReservation.setText(new Date(o.getDate()).toString());
         
-        TextView showNoteText = (TextView)getView().findViewById(R.id.note);
+        showNoteText = (EditText)getView().findViewById(R.id.note);
         showNoteText.setText(o.getNote());
         
-        
+        Button saveButton = (Button)getView().findViewById(R.id.savenote1);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	String noteText = showNoteText.getText().toString();	
+                DBManager.updateDb(noteText);
+            }
+        });
     }
+
     
     @Override
     public void onAttach(Activity activity) {

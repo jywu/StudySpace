@@ -17,7 +17,7 @@ import android.widget.TextView;
 public class EditNoteActivity extends Activity {
 
 	Button saveButton;
-	EditText  editNoteText;
+	EditText editNoteText;
 	
 	
 	

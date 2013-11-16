@@ -207,8 +207,7 @@ public class HistoryListActivity extends ListActivity{
                     Intent i = new Intent(getContext(), HistoryDetails.class);
                     i.putExtra("STUDYSPACE", o);
                     startActivityForResult(i,
-                            HistoryListActivity.ACTIVITY_ViewSpaceDetails);
-                    
+                            HistoryListActivity.ACTIVITY_ViewSpaceDetails);              
                 }
             });
             
