@@ -22,6 +22,10 @@ public class HistoryDetails extends FragmentActivity {
     // Connection detector class
     ConnectionDetector cd;
     
+    public HistoryTabDetails getTabDetails(){
+    	return this.tabdetails;
+    }
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
