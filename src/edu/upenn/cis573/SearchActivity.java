@@ -308,8 +308,12 @@ public class SearchActivity extends Activity {
     
     public void onNoteButtonClick(View view){
         System.out.println("Click the note button!");
-    	Intent intent = new Intent(this, EditNoteActivity.class);
-        startActivityForResult(intent, -1);
+        if(DBManager.isEmpty()) {
+            showNoHistoryDialog();
+        }else {
+            Intent intent = new Intent(this, EditNoteActivity.class);
+            startActivityForResult(intent, -1);
+        }
     }
     
     //XXX
@@ -318,6 +322,14 @@ public class SearchActivity extends Activity {
         System.out.println("Click the history button!");
         Intent intent = new Intent(this, HistoryListActivity.class);
         startActivityForResult(intent, -1);
+    }
+    
+    public void showNoHistoryDialog() {
+        final Context currContext = this;
+        AlertDialog.Builder builder = new AlertDialog.Builder(currContext);
+        builder.setMessage("No reservation history. Please make a reservation first.");
+        builder.setTitle("No history");
+        builder.show();
     }
     
     /*

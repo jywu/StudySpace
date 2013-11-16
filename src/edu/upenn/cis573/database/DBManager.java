@@ -62,7 +62,7 @@ public class DBManager {
 
 
     public static int updateDb(String noteText){  
-        //ArrayList<StudySpace> histories = new ArrayList<StudySpace>();  
+
         Cursor c = queryTheCursor(true);
         c.moveToFirst();
 

@@ -38,6 +38,8 @@ public class EditNoteActivity extends Activity {
             editNoteText.setText(text);
         }	   
     }
+    
+
 
     public void onSaveNote(View view){
         Log.v("EditText", editNoteText.getText().toString());
