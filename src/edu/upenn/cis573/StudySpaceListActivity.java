@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -497,7 +498,10 @@ public class StudySpaceListActivity extends ListActivity {
                             .setPositiveButton("Reserve",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
-                                            DBManager.add(o);
+                                            if(DBManager.add(o) == -1) {
+                                                //showClearHistoryDialog();
+                                                
+                                            }
                                             Intent k = null;
                                             if(o.getBuildingType().equals(StudySpace.WHARTON)) {
                                                 k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://spike.wharton.upenn.edu/Calendar/gsr.cfm?"));
@@ -531,6 +535,32 @@ public class StudySpaceListActivity extends ListActivity {
                 }
             });
             return v;
+        }
+        
+        public void showClearHistoryDialog() {
+            final Context currContext = this.getContext();
+            AlertDialog.Builder builder = new AlertDialog.Builder(currContext);
+            builder.setMessage("The database if full, would you like to clear history? (This action is unrecoverable)");
+            builder.setTitle("Database Full");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (DBManager.isEmpty()) {
+                        new AlertDialog.Builder(currContext)
+                        .setTitle("No History")
+                        .setMessage("Current history is empty!")
+                        .show();
+                    }
+                    else {
+                        DBManager.clearDB();
+                        ((Activity)currContext).finish();
+                    }
+                }
+
+            });
+            builder.show();
+
+
         }
 
         @Override

@@ -4,9 +4,12 @@ import java.util.Date;
 
 import edu.upenn.cis573.database.DBManager;
 import edu.upenn.cis573.datastructure.Room;
-
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -154,10 +157,34 @@ public class HistoryTabDetails extends Fragment {
         Button saveButton = (Button)getView().findViewById(R.id.savenote1);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	String noteText = showNoteText.getText().toString();	
-                DBManager.updateDb(noteText);
+            	String noteText = showNoteText.getText().toString();
+            	if(DBManager.updateDb(noteText) == -1) {
+            	    showClearHistoryDialog();
+            	};
             }
         });
+    }
+    
+    public void showClearHistoryDialog() {
+        final Context currContext = this.getActivity();
+        new AlertDialog.Builder(currContext)
+        .setMessage("The database if full, would you like to clear history? (This action is unrecoverable)")
+        .setTitle("Database Full")
+        .setPositiveButton("Yes", new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (DBManager.isEmpty()) {
+                    new AlertDialog.Builder(currContext)
+                    .setTitle("No History")
+                    .setMessage("Current history is empty!")
+                    .show();
+                }else {
+                    DBManager.clearDB();
+                    ((Activity)currContext).finish();
+                }
+            }
+        })
+        .show();
     }
 
     

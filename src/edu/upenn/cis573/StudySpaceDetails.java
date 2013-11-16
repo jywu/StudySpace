@@ -3,6 +3,10 @@ package edu.upenn.cis573;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -154,7 +158,35 @@ public class StudySpaceDetails extends FragmentActivity {
      */
     private void addToHistory() {
         o.setDate(System.currentTimeMillis());
-        DBManager.add(o);
+        if(DBManager.add(o) == -1) {
+            showClearHistoryDialog();
+        }
+    }
+    
+    public void showClearHistoryDialog() {
+        final Context currContext = this;
+        AlertDialog.Builder builder = new AlertDialog.Builder(currContext);
+        builder.setMessage("The database if full, would you like to clear history? (This action is unrecoverable)");
+        builder.setTitle("Database Full");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (DBManager.isEmpty()) {
+                    new AlertDialog.Builder(currContext)
+                    .setTitle("No History")
+                    .setMessage("Current history is empty!")
+                    .show();
+                }
+                else {
+                    DBManager.clearDB();
+                    ((Activity)currContext).finish();
+                }
+            }
+
+        });
+        builder.show();
+
+
     }
 
 }
