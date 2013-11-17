@@ -261,10 +261,11 @@ public class SearchActivity extends Activity {
             i.putExtra("SEARCH_OPTIONS", (Serializable)mSearchOptions);
 
             //on search trigger test
-            this.showCurrentLocation();
+            //this.showCurrentLocation();
             setResult(RESULT_OK, i);
             //ends this activity
-            finish();
+            this.finish();
+            return;
         } else {
             cd.showAlertDialog(SearchActivity.this, "No Internet Connection",
                     "You don't have internet connection.", false);

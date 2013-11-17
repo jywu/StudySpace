@@ -123,25 +123,12 @@ public class StudySpaceListActivity extends ListActivity {
         }
 
         // Start up the search options screen
+        if(searchOptions == null) {
         Intent i = new Intent(this, SearchActivity.class);
         startActivityForResult(i,
                 StudySpaceListActivity.ACTIVITY_SearchActivity);
-        // attaches listener to the filter
-        final TextView search = (EditText) findViewById(R.id.filter);
-        search.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-                String query = search.getText().toString();
-                ss_adapter.filterResults(query);
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                    int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before,
-                    int count) {
-            }
-        });
+        }
+        
 
     }
     
@@ -200,6 +187,24 @@ public class StudySpaceListActivity extends ListActivity {
                 ss_adapter.filterSpaces();
             }
             ss_adapter.updateFavorites(preferences);
+            
+            // attaches listener to the filter
+            final TextView search = (EditText) findViewById(R.id.filter);
+            search.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable s) {
+                    String query = search.getText().toString();
+                    ss_adapter.filterResults(query);
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count,
+                        int after) {
+                }
+
+                public void onTextChanged(CharSequence s, int start, int before,
+                        int count) {
+                }
+            });
+            
             break;
         case ACTIVITY_ViewSpaceDetails:
             preferences = (Preferences) intent
@@ -272,7 +277,11 @@ public class StudySpaceListActivity extends ListActivity {
      */
     private Runnable returnRes = new Runnable() {
         public void run() {
-            ss_ProgressDialog.dismiss();
+            try {
+                ss_ProgressDialog.dismiss();
+            }catch(Exception e) {
+                
+            }
             ss_adapter.notifyDataSetChanged();
             if (searchOptions != null)
                 ss_adapter.filterSpaces();
@@ -574,7 +583,7 @@ public class StudySpaceListActivity extends ListActivity {
         }
 
         @SuppressWarnings("unchecked")
-        public void filterSpaces() {
+        public void filterSpaces() { //must be completed before calling filterResults
 
             ArrayList<StudySpace> filtered = (ArrayList<StudySpace>) orig_items.clone();
             int i = 0;
