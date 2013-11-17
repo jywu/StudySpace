@@ -166,7 +166,7 @@ public class HistoryListActivity extends ListActivity{
                 v = vi.inflate(R.layout.sslistitem, null);
             }
 
-            final StudySpace studySpace = list_items.get(position);
+            StudySpace studySpace = list_items.get(position);
             if (studySpace != null) {
 
                 TextView tt = (TextView) v.findViewById(R.id.nametext);
@@ -227,7 +227,7 @@ public class HistoryListActivity extends ListActivity{
           //defines actions for on-click of each note button
             View note = v.findViewById(R.id.ViewNoteButton);
             note.setOnClickListener(new android.view.View.OnClickListener() {
-                
+                StudySpace studySpace;
                 @Override
                 public void onClick(View v) {
                     String noteText = DBManager.query(studySpace);
@@ -245,22 +245,39 @@ public class HistoryListActivity extends ListActivity{
                             HistoryListActivity.ACTIVITY_ViewNote);
                 }
                 
-            });
+                public android.view.View.OnClickListener init(StudySpace st){
+                	studySpace = st;
+                	return this;
+                }
+                
+            }.init(studySpace));
             
           //defines actions for on-click of each entry
             View entry = v.findViewById(R.id.entry);           
             entry.setOnClickListener(new android.view.View.OnClickListener(){
+            	int position;
                 @Override
                 public void onClick(View v) {
+                	ArrayList<StudySpace> historyList2 = DBManager.query();
+                
+                	StudySpace studySpace = historyList2.get(position);
                     Intent i = new Intent(getContext(), HistoryDetails.class);
+                    
                     i.putExtra("STUDYSPACE", studySpace);
                     startActivityForResult(i,
                             HistoryListActivity.ACTIVITY_ViewSpaceDetails);                  
                 }
-            });
+                
+                public android.view.View.OnClickListener init(int pos){
+                	position = pos;
+                	return this;
+                }
+                
+            }.init(position));
             
             //defines actions for long on-click of each entry
             entry.setOnLongClickListener(new OnLongClickListener() {
+            	StudySpace studySpace;
                 @Override
                 public boolean onLongClick(View v) {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
@@ -271,6 +288,7 @@ public class HistoryListActivity extends ListActivity{
                             .setCancelable(false)
                             .setPositiveButton("Reserve",
                                     new DialogInterface.OnClickListener() {
+                            			StudySpace studySpace;
                                         public void onClick(DialogInterface dialog, int id) {
                                             Intent k = null;
                                             if(studySpace.getBuildingType().equals(StudySpace.WHARTON)) {
@@ -291,7 +309,13 @@ public class HistoryListActivity extends ListActivity{
                                             }
                                             startActivity(k);
                                         }
-                                    })
+                                        
+                                        public DialogInterface.OnClickListener init(StudySpace st){
+                                        	studySpace = st;
+                                        	return this;
+                                        }
+                                        
+                                    }.init(studySpace))
                                     .setNegativeButton("Cancel", 
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog,
@@ -303,7 +327,13 @@ public class HistoryListActivity extends ListActivity{
                     alertDialog.show();
                     return true;
                 }
-            });
+                
+                public OnLongClickListener init(StudySpace st){
+                	studySpace = st;
+                	return this;
+                }
+                
+            }.init(studySpace));
             return v;
         }
 

@@ -16,8 +16,8 @@ public class DBManager {
 
     private static DBHelper helper;
     private static SQLiteDatabase db;
-    private static int MAX_NOTE_SIZE = 1;
-    private static int MAX_ENTRY_NUM = 1;
+    private static int MAX_NOTE_SIZE = 1000;
+    private static int MAX_ENTRY_NUM = 1000;
 
     public static void initDB(Context context) {
         helper = new DBHelper(context);         
@@ -53,8 +53,8 @@ public class DBManager {
             return -1;
         }else {
             db.insert(DBHelper.TABLE_NAME, null, values);
-            Log.i("Database", "Entry written to database: " + 
-                    history.getBuildingName() + " " + history.getSpaceName());
+            Log.i("Database", "Entry written to database: building name is:" + 
+                    history.getBuildingName() + "space name is: " + history.getSpaceName());
             return 1;
         }
     }  
@@ -71,6 +71,7 @@ public class DBManager {
 
         values.put(DBHelper.COLUMN_NAME_DATE,          c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_DATE)));
         values.put(DBHelper.COLUMN_NAME_BUILDINGNAME,  c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_BUILDINGNAME)));
+        Log.i("building name is:",  c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_BUILDINGNAME)));
         values.put(DBHelper.COLUMN_NAME_SPACENAME,     c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_SPACENAME)));
         values.put(DBHelper.COLUMN_NAME_LATITUDE,      c.getDouble(c.getColumnIndex(DBHelper.COLUMN_NAME_LATITUDE)));
         values.put(DBHelper.COLUMN_NAME_LONGITUDE,     c.getDouble(c.getColumnIndex(DBHelper.COLUMN_NAME_LONGITUDE)));
@@ -92,6 +93,41 @@ public class DBManager {
             return -1;
         }else {
             rowsAffected = db.update(DBHelper.TABLE_NAME, values, "date=?",args);    
+        }
+        return rowsAffected;
+    }  
+    
+    public static int updateDbWithSpecficEntry(StudySpace studySpace, String noteText){  
+
+      //  Cursor c = queryTheCursor(true);
+       // c.moveToFirst();
+
+
+        ContentValues values = new ContentValues();
+
+        values.put(DBHelper.COLUMN_NAME_DATE,          studySpace.getDate());
+        values.put(DBHelper.COLUMN_NAME_BUILDINGNAME,  studySpace.getBuildingName());
+        values.put(DBHelper.COLUMN_NAME_SPACENAME,     studySpace.getSpaceName());
+        values.put(DBHelper.COLUMN_NAME_LATITUDE,      studySpace.getSpaceLatitude());
+        values.put(DBHelper.COLUMN_NAME_LONGITUDE,     studySpace.getSpaceLongitude());
+        values.put(DBHelper.COLUMN_NAME_ROOMNUM,       studySpace.getNumberOfRooms());
+        values.put(DBHelper.COLUMN_NAME_MAXOCCUPANCY,  studySpace.getMaximumOccupancy());
+        values.put(DBHelper.COLUMN_NAME_HASWHITEBOARD, studySpace.hasWhiteboard());
+        values.put(DBHelper.COLUMN_NAME_PRIVACY,       studySpace.getPrivacy());
+        values.put(DBHelper.COLUMN_NAME_HASCOMPUTER,   studySpace.hasComputer());
+        values.put(DBHelper.COLUMN_NAME_RESERVETYPE,   studySpace.getReserveType());
+        values.put(DBHelper.COLUMN_NAME_HASBIGSCREEN,  studySpace.has_big_screen());
+        values.put(DBHelper.COLUMN_NAME_COMMENTS,      studySpace.getComments());
+        values.put(DBHelper.COLUMN_NAME_ROOMNAME,      studySpace.getRooms()[0].getRoomName());
+        values.put(DBHelper.COLUMN_NAME_NOTE,     noteText);
+
+        int rowsAffected = 0;
+        String[] args = {studySpace.getBuildingName(), studySpace.getSpaceName(), String.valueOf(studySpace.getDate())}; 
+        if(spaceUsed() + noteText.length() > MAX_NOTE_SIZE) {
+            Log.i("DATABASE", "Database is full."); 
+            return -1;
+        }else {
+            rowsAffected = db.update(DBHelper.TABLE_NAME, values, "buildingName=? and spaceName = ? and date = ?", args);    
         }
         return rowsAffected;
     }  

@@ -13,6 +13,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -158,7 +159,8 @@ public class HistoryTabDetails extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	String noteText = showNoteText.getText().toString();
-            	if(DBManager.updateDb(noteText) == -1) {
+            	Log.i("In history details page building name is: ", o.getBuildingName());
+            	if(DBManager.updateDbWithSpecficEntry(o, noteText) == -1) {
             	    showClearHistoryDialog();
             	};
             }
