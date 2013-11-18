@@ -26,7 +26,7 @@ import android.widget.TextView;
 public class HistoryTabDetails extends Fragment {
     private StudySpace o;
     private EditText showNoteText;
-    
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,7 +34,7 @@ public class HistoryTabDetails extends Fragment {
         View view = inflater.inflate(R.layout.historyviewtabdetails, container, false);
         return view;
     }
-     
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -148,28 +148,29 @@ public class HistoryTabDetails extends Fragment {
             else
                 an.setVisibility(View.GONE);
         }
-        
+
         //displays date of last reservation
         TextView lastReservation = (TextView) getView().findViewById(R.id.last_reservation_time);
         lastReservation.setText(new Date(o.getStartDate()).toString());
-        
+
         showNoteText = (EditText)getView().findViewById(R.id.note);
         showNoteText.setText(o.getNote());
-        
+
         Button saveButton = (Button)getView().findViewById(R.id.savenote1);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	String noteText = showNoteText.getText().toString();
-            	
-            	Log.i("In history details page building name is: ", o.getBuildingName());
-            	if(DBManager.updateDbWithSpecficEntry(o, noteText) == -1) {
-            	    showClearHistoryDialog();
-            	}
-            	showSaveDialog();
+                String noteText = showNoteText.getText().toString();
+
+                Log.i("In history details page building name is: ", o.getBuildingName());
+                if(DBManager.updateDbWithSpecficEntry(o, noteText) == -1) {
+                    showClearHistoryDialog();
+                }else {
+                    showSaveDialog();
+                }
             }
         });
     }
-    
+
     public void showSaveDialog(){
         AlertDialog.Builder builder = new Builder(getActivity());
         builder.setMessage("Your note has been saved!");
@@ -182,7 +183,7 @@ public class HistoryTabDetails extends Fragment {
         });     
         builder.create().show();
     }
-    
+
     public void showClearHistoryDialog() {
         final Context currContext = this.getActivity();
         new AlertDialog.Builder(currContext)
@@ -205,10 +206,10 @@ public class HistoryTabDetails extends Fragment {
         .show();
     }
 
-    
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }
-    
+
 }

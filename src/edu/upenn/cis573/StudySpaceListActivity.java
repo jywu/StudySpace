@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -78,7 +80,7 @@ public class StudySpaceListActivity extends ListActivity {
         super.onDestroy();
         DBManager.closeDB();
     }
-    
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -522,27 +524,29 @@ public class StudySpaceListActivity extends ListActivity {
                             new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             if(DBManager.add(o) == -1) {
-                                //showClearHistoryDialog();
+                                showClearHistoryDialog();
 
+                            }else {
+
+                                Intent k = null;
+                                if(o.getBuildingType().equals(StudySpace.WHARTON)) {
+                                    k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://spike.wharton.upenn.edu/Calendar/gsr.cfm?"));
+                                } else if(o.getBuildingType().equals(StudySpace.ENGINEERING)) {
+                                    k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.pennkey.upenn.edu/login/?factors=UPENN.EDU&cosign-seas-www_userpages-1&https://www.seas.upenn.edu/about-seas/room-reservation/form.php"));
+                                } else if(o.getBuildingType().equals(StudySpace.LIBRARIES)) {
+                                    k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.library.upenn.edu/cgi-bin/login?authz=grabit&app=http://bookit.library.upenn.edu/cgi-bin/rooms/rooms"));
+                                } else {
+                                    Calendar cal = Calendar.getInstance(Locale.US);              
+                                    k = new Intent(Intent.ACTION_EDIT);
+                                    k.setType("vnd.android.cursor.item/event");
+                                    k.putExtra("title", "PennStudySpaces Reservation confirmed. ");
+                                    k.putExtra("description", "Supported by PennStudySpaces");
+                                    k.putExtra("eventLocation", o.getBuildingName()+" - "+o.getRooms()[0].getRoomName());
+                                    k.putExtra("beginTime", cal.getTimeInMillis());
+                                    k.putExtra("endTime", cal.getTimeInMillis()+60*60*1000);
+                                }
+                                startActivity(k);
                             }
-                            Intent k = null;
-                            if(o.getBuildingType().equals(StudySpace.WHARTON)) {
-                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://spike.wharton.upenn.edu/Calendar/gsr.cfm?"));
-                            } else if(o.getBuildingType().equals(StudySpace.ENGINEERING)) {
-                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.pennkey.upenn.edu/login/?factors=UPENN.EDU&cosign-seas-www_userpages-1&https://www.seas.upenn.edu/about-seas/room-reservation/form.php"));
-                            } else if(o.getBuildingType().equals(StudySpace.LIBRARIES)) {
-                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.library.upenn.edu/cgi-bin/login?authz=grabit&app=http://bookit.library.upenn.edu/cgi-bin/rooms/rooms"));
-                            } else {
-                                Calendar cal = Calendar.getInstance(Locale.US);              
-                                k = new Intent(Intent.ACTION_EDIT);
-                                k.setType("vnd.android.cursor.item/event");
-                                k.putExtra("title", "PennStudySpaces Reservation confirmed. ");
-                                k.putExtra("description", "Supported by PennStudySpaces");
-                                k.putExtra("eventLocation", o.getBuildingName()+" - "+o.getRooms()[0].getRoomName());
-                                k.putExtra("beginTime", cal.getTimeInMillis());
-                                k.putExtra("endTime", cal.getTimeInMillis()+60*60*1000);
-                            }
-                            startActivity(k);
                         }
                     })
                     .setNegativeButton("Cancel", 
@@ -558,6 +562,36 @@ public class StudySpaceListActivity extends ListActivity {
                 }
             });
             return v;
+        }
+
+
+        public void showClearHistoryDialog() {
+            final Context currContext = this.getContext();
+            AlertDialog.Builder builder = new AlertDialog.Builder(currContext);
+            builder.setMessage("The database if full, would you like to clear history? (This action is unrecoverable)");
+            builder.setTitle("Database Full");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (DBManager.isEmpty()) {
+                        new AlertDialog.Builder(currContext)
+                        .setTitle("No History")
+                        .setMessage("Current history is empty!")
+                        .show();
+                    }
+                    else {
+                        DBManager.clearDB();
+                        Intent i = new Intent(currContext, SearchActivity.class);
+                        startActivityForResult(i,
+                                StudySpaceListActivity.ACTIVITY_SearchActivity);
+                        //((Activity)currContext).finish();
+                        
+                    }
+                }
+
+            });
+            builder.show();
+
         }
 
         @Override

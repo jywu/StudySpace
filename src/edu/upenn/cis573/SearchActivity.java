@@ -2,7 +2,9 @@ package edu.upenn.cis573;
 
 import java.io.Serializable;
 import java.util.Calendar;
+
 import edu.upenn.cis573.R;
+import edu.upenn.cis573.database.DBHelper;
 import edu.upenn.cis573.database.DBManager;
 import edu.upenn.cis573.datastructure.SearchOptions;
 import edu.upenn.cis573.util.ConnectionDetector;
@@ -147,6 +149,8 @@ public class SearchActivity extends Activity {
         // initializes database
         DBManager.initDB(this);
     }
+    
+
     
     @Override
     protected void onPause() {

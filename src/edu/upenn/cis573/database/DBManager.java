@@ -2,6 +2,7 @@ package edu.upenn.cis573.database;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import edu.upenn.cis573.StudySpace;
 import edu.upenn.cis573.datastructure.Room;
 import android.content.ContentValues;
@@ -15,14 +16,15 @@ public class DBManager {
     private static DBHelper helper;
     private static SQLiteDatabase db;
 
-    private static int MAX_NOTE_SIZE = 1000; //max number of characters
-    private static int MAX_ENTRY_NUM = 100; //max number of history entries
+    private static int MAX_NOTE_SIZE = 5; //max number of characters
+    private static int MAX_ENTRY_NUM = 3; //max number of history entries
 
     public static void initDB(Context context) {
         helper = new DBHelper(context);         
         db = helper.getWritableDatabase(); 
 
     }
+    
 
     /**
      * Adds new StudySpace entry to the database.

@@ -40,7 +40,9 @@ public class DBHelper extends SQLiteOpenHelper{
     public DBHelper(Context context) {  
         //CursorFactory is set to null, as default  
         super(context, DATABASE_NAME, null, DATABASE_VERSION);  
-    }  
+    } 
+
+
   
     //The first time database has been created, onCreate will be called  
     @Override  
