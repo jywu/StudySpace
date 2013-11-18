@@ -6,6 +6,7 @@
 
     <LinearLayout
         android:id="@+id/footer"
+        android:baselineAligned="false"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
@@ -22,6 +23,7 @@
             android:onClick="onDetailsClickHistory" >
 
             <ImageView
+                android:contentDescription="@string/infoButton"
                 android:layout_width="fill_parent"
                 android:layout_height="3dp"
                 android:id="@+id/button_details_history"
@@ -47,6 +49,7 @@
             android:onClick="onMapClickHistory" >
 
             <ImageView
+                android:contentDescription="@string/mapButton"
                 android:layout_width="fill_parent"
                 android:layout_height="3dp"
                 android:id="@+id/button_map_history"

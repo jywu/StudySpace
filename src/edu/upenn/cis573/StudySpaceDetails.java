@@ -30,7 +30,7 @@ import edu.upenn.cis573.util.ConnectionDetector;
 public class StudySpaceDetails extends FragmentActivity {
 
     private TabDetails tabdetails;
-    private StudySpace o;
+    private StudySpace space;
     private Preferences p;
     private SharedPreferences favorites;
     Boolean isInternetPresent = false;
@@ -46,7 +46,7 @@ public class StudySpaceDetails extends FragmentActivity {
         favorites = getSharedPreferences(StudySpaceListActivity.FAV_PREFERENCES, 0);
 
         Intent i = getIntent();
-        o = (StudySpace) i.getSerializableExtra("STUDYSPACE");
+        space = (StudySpace) i.getSerializableExtra("STUDYSPACE");
         p = (Preferences) i.getSerializableExtra("PREFERENCES");
         if(p == null) {
             p = new Preferences();
@@ -99,7 +99,7 @@ public class StudySpaceDetails extends FragmentActivity {
     public void onMapClick(View v){
         Intent i = new Intent(this, CustomBuildingMap.class);
         ArrayList<StudySpace> olist = new ArrayList<StudySpace>();
-        olist.add(o);
+        olist.add(space);
         i.putExtra("STUDYSPACELIST", olist);
         startActivity(i);
     }
@@ -120,19 +120,19 @@ public class StudySpaceDetails extends FragmentActivity {
     }
 
     public void onFavClick(View v){
-        p.addFavorites(o.getBuildingName()+o.getSpaceName());
+        p.addFavorites(space.getBuildingName()+space.getSpaceName());
         tabdetails.onFavClick(v);
 
         SharedPreferences.Editor editor = favorites.edit();
-        editor.putBoolean(o.getBuildingName()+o.getSpaceName(), true);
+        editor.putBoolean(space.getBuildingName()+space.getSpaceName(), true);
         editor.commit();
     }
     
     public void onRemoveFavClick(View v){
-        p.removeFavorites(o.getBuildingName()+o.getSpaceName());
+        p.removeFavorites(space.getBuildingName()+space.getSpaceName());
         tabdetails.onRemoveFavClick(v);
         SharedPreferences.Editor editor = favorites.edit();
-        editor.putBoolean(o.getBuildingName()+o.getSpaceName(), false);
+        editor.putBoolean(space.getBuildingName()+space.getSpaceName(), false);
         editor.commit();
     }
     
@@ -157,8 +157,8 @@ public class StudySpaceDetails extends FragmentActivity {
      * Adds this StudySpace object to the database.
      */
     private void addToHistory() {
-        o.setDate(System.currentTimeMillis());
-        if(DBManager.add(o) == -1) {
+        //o.setDate(System.currentTimeMillis());
+        if(DBManager.add(space) == -1) {
             showClearHistoryDialog();
         }
     }

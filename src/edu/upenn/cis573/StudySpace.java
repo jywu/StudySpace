@@ -2,6 +2,7 @@ package edu.upenn.cis573;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 import edu.upenn.cis573.datastructure.Room;
 
@@ -37,10 +38,11 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
     private boolean has_big_screen;
     private Room[]  rooms;
     private String note;
-    private int startTime;
-    private int endTime;
+      
+    private Date completeStartTime = new Date();
+    private Date completeEndTime = new Date();
     
-    private long date;
+    private int groupSize;
 
     public StudySpace(String name, double lat, double lon, int num_rooms,
             String b_name, int max_occ, boolean has_wh, String pri,
@@ -59,22 +61,98 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
         has_big_screen  = has_big_s;
         comments        = comm;
         rooms           = r;
+        completeStartTime = new Date();
+        completeEndTime = new Date();
     }
     
-    protected int getStartTime() {
-        return startTime;
+    public Date getCompleteStartTime() {
+        return completeStartTime;
+    }
+    
+    public Date getCompleteEndtTime() {
+        return completeEndTime;
     }
 
-    protected void setStartTime(int startTime) {
-        this.startTime = startTime;
+    public void setCompleteStartTime(Date completeStartTime) {
+        this.completeStartTime = completeStartTime;
+    }
+    
+    public void setCompleteEndTime(Date completeEndTime) {
+        this.completeEndTime = completeEndTime;
+    }
+    
+    public int getMonth() {
+        return completeStartTime.getMonth();
+    }
+    
+    public void setMonth(int month) {
+        completeStartTime.setMonth(month);
+        completeEndTime.setMonth(month);
     }
 
-    protected int getEndTime() {
-        return endTime;
+    public int getYear() {
+        return completeStartTime.getYear();
+    }
+    
+    public void setYear(int year) {
+        completeEndTime.setYear(year);
+        completeStartTime.setYear(year);
+    }
+    
+    public void setStartDate(int date) {
+        completeStartTime.setDate(date);
+    }
+    
+    public void setEndDate(int date) {
+        completeEndTime.setDate(date);
+    }
+    
+    public int getGroupSize() {
+        return groupSize;
     }
 
-    protected void setEndTime(int endTime) {
-        this.endTime = endTime;
+    public void setGroupSize(int groupSize) {
+        this.groupSize = groupSize;
+    }
+    
+    public int getStartHour() {
+        return completeStartTime.getHours();
+    }
+
+    public int getEndHour() {
+        return completeEndTime.getHours();
+    }
+    
+    public int getStartMin() {
+        return completeStartTime.getMinutes();
+    }
+
+    public int getEndMin() {
+        return completeEndTime.getMinutes();
+    }
+    
+    public void setStartMin(int min) {
+        completeStartTime.setMinutes(min);
+    }
+    
+    public void setEndMin(int min) {
+        completeEndTime.setMinutes(min);
+    }
+    
+    public void setStartHour(int startHour) {
+         completeStartTime.setHours(startHour);;
+    }
+
+    public void setEndHour(int endHour) {
+        completeEndTime.setHours(endHour);
+    }
+    
+    public int getStartDate() {
+        return completeStartTime.getDate();
+    }
+    
+    public int getEndDate() {
+        return completeEndTime.getDate();
     }
 
     public StudySpace() { }
@@ -87,12 +165,12 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
     
     }
     
-    public long getDate() {
-        return date;
+    public String getNote(){
+        return this.note;
     }
-
-    public void setDate(long date) {
-        this.date = date;
+    
+    public void setNote(String note){
+        this.note = note;
     }
     
     public void setDistance(double d){
@@ -301,14 +379,6 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
         } else {
             return OTHER;
         }
-    }
-    
-    public String getNote(){
-    	return this.note;
-    }
-    
-    public void setNote(String note){
-    	this.note = note;
     }
 
 }

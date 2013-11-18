@@ -3,9 +3,7 @@ package edu.upenn.cis573;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Locale;
 import java.util.Set;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -32,8 +29,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
-import com.google.android.maps.OverlayItem;
-
 import edu.upenn.cis573.datastructure.Building;
 import edu.upenn.cis573.datastructure.Preferences;
 import edu.upenn.cis573.util.ConnectionDetector;
@@ -149,7 +144,7 @@ public class CustomBuildingMap extends Activity {
                 clat += latitude;
                 clon += longitude;
                 ++cnt;
-                OverlayItem overlayitem = new OverlayItem(p, "", "");
+//                OverlayItem overlayitem = new OverlayItem(p, "", "");
 //                pinsRed.addOverlay(overlayitem, new Building(rooms));
                 
                 
@@ -209,8 +204,8 @@ public class CustomBuildingMap extends Activity {
     protected boolean showBuildingDialog(final Building building) {        
         if (building == null)
             return true;
-        Geocoder geoCoder = new Geocoder(
-                getBaseContext(), Locale.getDefault());
+//        Geocoder geoCoder = new Geocoder(
+//                getBaseContext(), Locale.getDefault());
         try {
 //            List<Address> addresses = geoCoder.getFromLocation(
 //                    building.getSpaceLatitude(), building.getSpaceLongitude(), 1); 

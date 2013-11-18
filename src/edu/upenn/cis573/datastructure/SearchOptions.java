@@ -176,7 +176,7 @@ public class SearchOptions implements Parcelable, Serializable {
     }
     
     @SuppressWarnings("deprecation")
-    public Date getStartDate() {
+    public Date getCompleteStartTime() {
         // Create Date object from the raw time and date data:
         Date startDate = new Date();
         //Log.e("year",Integer.toString(year));
@@ -189,7 +189,7 @@ public class SearchOptions implements Parcelable, Serializable {
     }
     
     @SuppressWarnings("deprecation")
-    public Date getEndDate() {
+    public Date getCompleteEndTime() {
         // Create Date object from the raw time and date data:
         Date endDate = new Date();
         endDate.setYear(year - 1900);

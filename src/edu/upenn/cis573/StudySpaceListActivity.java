@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -31,7 +29,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -58,7 +55,7 @@ public class StudySpaceListActivity extends ListActivity {
     public static final int ACTIVITY_SearchActivity = 2;
     public static final int ACTIVITY_ViewRooms = 3;
     static final String FAV_PREFERENCES = "favoritePreferences";
-    
+
     private ProgressDialog ss_ProgressDialog = null; // Dialog when loading
     private ArrayList<StudySpace> ss_list = null; // List containing available rooms
     private StudySpaceListAdapter ss_adapter; // Adapter to format list items
@@ -66,15 +63,22 @@ public class StudySpaceListActivity extends ListActivity {
     private SearchOptions searchOptions; // create a default searchoption later
     private Preferences preferences;
     private SharedPreferences favorites;
-    
+
     private boolean mapViewClicked;
     private boolean favSelected;
-    
+
     /*
      ******************************************
      *          Overridden Methods
      ******************************************
      */
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DBManager.closeDB();
+    }
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,13 +91,13 @@ public class StudySpaceListActivity extends ListActivity {
         setListAdapter(ss_adapter); // Adapter to read list and display
         Map<String, ?> items = favorites.getAll();
         preferences = new Preferences(); // Change this when bundle is implemented.
-        
+
         for (String s : items.keySet()) {
             if (Boolean.parseBoolean(items.get(s).toString())) {
                 preferences.addFavorites(s);
             }
         }
-        
+
         // runs a new thread to scrap text from the website
         viewAvailableSpaces = new Runnable() {
             public void run() {
@@ -124,14 +128,14 @@ public class StudySpaceListActivity extends ListActivity {
 
         // Start up the search options screen
         if(searchOptions == null) {
-        Intent i = new Intent(this, SearchActivity.class);
-        startActivityForResult(i,
-                StudySpaceListActivity.ACTIVITY_SearchActivity);
+            Intent i = new Intent(this, SearchActivity.class);
+            startActivityForResult(i,
+                    StudySpaceListActivity.ACTIVITY_SearchActivity);
         }
-        
+
 
     }
-    
+
     /**
      * This methods handles key events that are not handled by
      * any Views within this Activity.
@@ -154,14 +158,14 @@ public class StudySpaceListActivity extends ListActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
-    
+
     /**
      * This method is called when an activity you launched exits, giving you 
      * the requestCode you started it with, the resultCode it returned, and 
@@ -175,7 +179,7 @@ public class StudySpaceListActivity extends ListActivity {
         switch (requestCode) {
         case ACTIVITY_SearchActivity:
             searchOptions = (SearchOptions) intent
-                    .getParcelableExtra("SEARCH_OPTIONS");
+            .getParcelableExtra("SEARCH_OPTIONS");
             ImageView image = (ImageView) this
                     .findViewById(R.id.favorite_button);
             image.setImageResource(R.color.yellow);
@@ -187,7 +191,7 @@ public class StudySpaceListActivity extends ListActivity {
                 ss_adapter.filterSpaces();
             }
             ss_adapter.updateFavorites(preferences);
-            
+
             // attaches listener to the filter
             final TextView search = (EditText) findViewById(R.id.filter);
             search.addTextChangedListener(new TextWatcher() {
@@ -204,18 +208,18 @@ public class StudySpaceListActivity extends ListActivity {
                         int count) {
                 }
             });
-            
+
             break;
         case ACTIVITY_ViewSpaceDetails:
             preferences = (Preferences) intent
-                    .getSerializableExtra("PREFERENCES");
+            .getSerializableExtra("PREFERENCES");
             ss_adapter.updateFavorites(preferences);
             break;
         case ACTIVITY_ViewRooms:
             Log.d("List", "ViewRooms");
             @SuppressWarnings("unchecked")
             ArrayList<StudySpace> nlist = (ArrayList<StudySpace>) intent
-                    .getSerializableExtra("STUDYSPACELIST");
+            .getSerializableExtra("STUDYSPACELIST");
             if (!nlist.isEmpty()) {
                 ss_adapter.setListItems(nlist);
                 this.mapViewClicked = true;
@@ -225,7 +229,7 @@ public class StudySpaceListActivity extends ListActivity {
             break;
         }
     }
-    
+
     /*
      ********************************************
      * Defines click behaviors for main buttons 
@@ -244,14 +248,14 @@ public class StudySpaceListActivity extends ListActivity {
             ss_adapter.allToFav();
         }
     }
-    
+
     public void onSearchClick(View view) {
         // Start up the search options screen
         Intent i = new Intent(this, SearchActivity.class);
         startActivityForResult(i,
                 StudySpaceListActivity.ACTIVITY_SearchActivity);
     }
-    
+
     public void onMapViewClick(View view) {
         // Start up the search options screen
         Log.d("MapView", "Clicked");
@@ -277,10 +281,8 @@ public class StudySpaceListActivity extends ListActivity {
      */
     private Runnable returnRes = new Runnable() {
         public void run() {
-            try {
+            if(ss_ProgressDialog.isShowing()) {
                 ss_ProgressDialog.dismiss();
-            }catch(Exception e) {
-                
             }
             ss_adapter.notifyDataSetChanged();
             if (searchOptions != null)
@@ -301,10 +303,10 @@ public class StudySpaceListActivity extends ListActivity {
         }
         runOnUiThread(returnRes);
     }
-    
+
     public ArrayList<StudySpace> filterByDate(ArrayList<StudySpace> arr) {
-        Date d1 = searchOptions.getStartDate();
-        Date d2 = searchOptions.getEndDate();
+        Date d1 = searchOptions.getCompleteStartTime();
+        Date d2 = searchOptions.getCompleteEndTime();
 
         for (int i = arr.size() - 1; i >= 0; i--) {
             boolean flag = false;
@@ -319,8 +321,19 @@ public class StudySpaceListActivity extends ListActivity {
                 }
             }
 
-            if (!flag)
+            if (!flag) {
                 arr.remove(i);
+            }else {
+                arr.get(i).setStartHour(searchOptions.getStartHour());
+                arr.get(i).setEndHour(searchOptions.getEndHour());
+                arr.get(i).setStartMin(searchOptions.getStartMinute());
+                arr.get(i).setEndMin(searchOptions.getEndMinute());
+                arr.get(i).setStartDate(searchOptions.getDay());
+                arr.get(i).setEndDate(searchOptions.getDay());
+                arr.get(i).setMonth(searchOptions.getMonth());
+                arr.get(i).setYear(searchOptions.getYear());
+                arr.get(i).setGroupSize(searchOptions.getNumberOfPeople());
+            }
         }
         return arr;
     }
@@ -332,7 +345,7 @@ public class StudySpaceListActivity extends ListActivity {
         }
         return arr;
     }
-    
+
     public ArrayList<StudySpace> sortByDistance(ArrayList<StudySpace> arr) {
         double currentLatitude = SearchActivity.latitude;
         double currentLongitude = SearchActivity.longitude;
@@ -346,7 +359,7 @@ public class StudySpaceListActivity extends ListActivity {
             temp.setDistance(distance);
         }
         Collections.sort(arr);
-        System.out.println("Results havs already been sorted!");
+        System.out.println("Results have already been sorted!");
 
         if (arr.isEmpty()) {
 
@@ -357,15 +370,15 @@ public class StudySpaceListActivity extends ListActivity {
 
             // set dialog message
             alertDialogBuilder
-                    .setMessage(
-                            "No rooms available with the selected criteria")
+            .setMessage(
+                    "No rooms available with the selected criteria")
                     .setCancelable(false)
                     .setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
 
             // create alert dialog
             AlertDialog alertDialog = alertDialogBuilder.create();
@@ -375,11 +388,11 @@ public class StudySpaceListActivity extends ListActivity {
         }
         return arr;
     }
-    
+
     public ArrayList<StudySpace> getList() {
         return ss_list;
     }
-    
+
     /**
      * StudySpaceListAdapter is a private inner class that the StudySpaceListActivity 
      * class uses to switch the user between the various lists of study spaces displayed 
@@ -398,6 +411,7 @@ public class StudySpaceListActivity extends ListActivity {
             super(context, textViewResourceId, items);
             this.list_items = items;
             this.orig_items = items;
+            //this.before_search = items;
             this.fav_orig_items = new ArrayList<StudySpace>();
         }
 
@@ -466,7 +480,7 @@ public class StudySpaceListActivity extends ListActivity {
                 else
                     proj.setVisibility(View.VISIBLE);
             }
-            
+
             View noteButton = ((ViewGroup) v).getChildAt(0);
             System.out.println(noteButton.getId());
             //action to perform note button click
@@ -478,8 +492,8 @@ public class StudySpaceListActivity extends ListActivity {
                     //startActivityForResult(intent, -1);
                 }
             });
-            
-            
+
+
             //defines actions for on-click of each entry
 
             v.setOnClickListener(new OnClickListener(){
@@ -490,10 +504,10 @@ public class StudySpaceListActivity extends ListActivity {
                     i.putExtra("PREFERENCES", preferences);
                     startActivityForResult(i,
                             StudySpaceListActivity.ACTIVITY_ViewSpaceDetails);
-                    
+
                 }
             });
-            
+
             //defines actions for long on-click of each entry
             v.setOnLongClickListener(new OnLongClickListener() {
                 @Override
@@ -502,74 +516,48 @@ public class StudySpaceListActivity extends ListActivity {
                             getContext());
                     alertDialogBuilder.setTitle("Reservation");
                     alertDialogBuilder
-                            .setMessage("Would you like to make a reservation?")
-                            .setCancelable(false)
-                            .setPositiveButton("Reserve",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            if(DBManager.add(o) == -1) {
-                                                //showClearHistoryDialog();
-                                                
-                                            }
-                                            Intent k = null;
-                                            if(o.getBuildingType().equals(StudySpace.WHARTON)) {
-                                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://spike.wharton.upenn.edu/Calendar/gsr.cfm?"));
-                                            } else if(o.getBuildingType().equals(StudySpace.ENGINEERING)) {
-                                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.pennkey.upenn.edu/login/?factors=UPENN.EDU&cosign-seas-www_userpages-1&https://www.seas.upenn.edu/about-seas/room-reservation/form.php"));
-                                            } else if(o.getBuildingType().equals(StudySpace.LIBRARIES)) {
-                                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.library.upenn.edu/cgi-bin/login?authz=grabit&app=http://bookit.library.upenn.edu/cgi-bin/rooms/rooms"));
-                                            } else {
-                                                Calendar cal = Calendar.getInstance(Locale.US);              
-                                                k = new Intent(Intent.ACTION_EDIT);
-                                                k.setType("vnd.android.cursor.item/event");
-                                                k.putExtra("title", "PennStudySpaces Reservation confirmed. ");
-                                                k.putExtra("description", "Supported by PennStudySpaces");
-                                                k.putExtra("eventLocation", o.getBuildingName()+" - "+o.getRooms()[0].getRoomName());
-                                                k.putExtra("beginTime", cal.getTimeInMillis());
-                                                k.putExtra("endTime", cal.getTimeInMillis()+60*60*1000);
-                                            }
-                                            startActivity(k);
-                                        }
-                                    })
-                                    .setNegativeButton("Cancel", 
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog,
-                                                        int id) {
-                                                    dialog.cancel();
-                                                }
-                                            });
+                    .setMessage("Would you like to make a reservation?")
+                    .setCancelable(false)
+                    .setPositiveButton("Reserve",
+                            new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            if(DBManager.add(o) == -1) {
+                                //showClearHistoryDialog();
+
+                            }
+                            Intent k = null;
+                            if(o.getBuildingType().equals(StudySpace.WHARTON)) {
+                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://spike.wharton.upenn.edu/Calendar/gsr.cfm?"));
+                            } else if(o.getBuildingType().equals(StudySpace.ENGINEERING)) {
+                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.pennkey.upenn.edu/login/?factors=UPENN.EDU&cosign-seas-www_userpages-1&https://www.seas.upenn.edu/about-seas/room-reservation/form.php"));
+                            } else if(o.getBuildingType().equals(StudySpace.LIBRARIES)) {
+                                k = new Intent(Intent.ACTION_VIEW, Uri.parse("https://weblogin.library.upenn.edu/cgi-bin/login?authz=grabit&app=http://bookit.library.upenn.edu/cgi-bin/rooms/rooms"));
+                            } else {
+                                Calendar cal = Calendar.getInstance(Locale.US);              
+                                k = new Intent(Intent.ACTION_EDIT);
+                                k.setType("vnd.android.cursor.item/event");
+                                k.putExtra("title", "PennStudySpaces Reservation confirmed. ");
+                                k.putExtra("description", "Supported by PennStudySpaces");
+                                k.putExtra("eventLocation", o.getBuildingName()+" - "+o.getRooms()[0].getRoomName());
+                                k.putExtra("beginTime", cal.getTimeInMillis());
+                                k.putExtra("endTime", cal.getTimeInMillis()+60*60*1000);
+                            }
+                            startActivity(k);
+                        }
+                    })
+                    .setNegativeButton("Cancel", 
+                            new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                int id) {
+                            dialog.cancel();
+                        }
+                    });
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
                     return true;
                 }
             });
             return v;
-        }
-        
-        public void showClearHistoryDialog() {
-            final Context currContext = this.getContext();
-            AlertDialog.Builder builder = new AlertDialog.Builder(currContext);
-            builder.setMessage("The database if full, would you like to clear history? (This action is unrecoverable)");
-            builder.setTitle("Database Full");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (DBManager.isEmpty()) {
-                        new AlertDialog.Builder(currContext)
-                        .setTitle("No History")
-                        .setMessage("Current history is empty!")
-                        .show();
-                    }
-                    else {
-                        DBManager.clearDB();
-                        ((Activity)currContext).finish();
-                    }
-                }
-
-            });
-            builder.show();
-
-
         }
 
         @Override
@@ -590,25 +578,25 @@ public class StudySpaceListActivity extends ListActivity {
             while (i < filtered.size()) {
                 if (!searchOptions.getEngi()
                         && filtered.get(i).getBuildingType()
-                                .equals(StudySpace.ENGINEERING)) {
+                        .equals(StudySpace.ENGINEERING)) {
                     filtered.remove(i);
                     continue;
                 }
                 if (!searchOptions.getWhar()
                         && filtered.get(i).getBuildingType()
-                                .equals(StudySpace.WHARTON)) {
+                        .equals(StudySpace.WHARTON)) {
                     filtered.remove(i);
                     continue;
                 }
                 if (!searchOptions.getLib()
                         && filtered.get(i).getBuildingType()
-                                .equals(StudySpace.LIBRARIES)) {
+                        .equals(StudySpace.LIBRARIES)) {
                     filtered.remove(i);
                     continue;
                 }
                 if (!searchOptions.getOth()
                         && filtered.get(i).getBuildingType()
-                                .equals(StudySpace.OTHER)) {
+                        .equals(StudySpace.OTHER)) {
                     filtered.remove(i);
                     continue;
                 }
@@ -642,6 +630,7 @@ public class StudySpaceListActivity extends ListActivity {
             }
             list_items = filtered;
             list_items = filterByPeople(list_items);
+            list_items = filterByDate(list_items);
             list_items = sortByDistance(list_items);
             if (SearchActivity.isFNButtonClicked()) {
                 System.out.println("Remove Array Method called");

@@ -11,7 +11,7 @@
     <string name="reservable_check_box">Reservable</string>
     <string name="map">Map</string>
     <string name="details">Details</string>
-    <string name="info">Info</string>
+    <string name="infoButton">infoButton</string>
     <string name="search">Search</string>
     <string name="favorites">Favorites</string>
     <string name="add_favorites">Add to favorites</string>
@@ -30,5 +30,13 @@
     <string name="title_activity_edit_note">EditNoteActivity</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="info">info</string>
+    <string name="mapButton">mapButton</string>
+    <string name="add_notes_here">Edit notes here:</string>
+    <string name="save">Save</string>
+    <string name="available_now">AVAILABLE NOW</string>
+    <string name="computer_icon">computer_icon</string>
+    <string name="last_reservation">Last reservation: </string>
+    <string name="projector_icon">projector_icon</string>
 
 </resources>

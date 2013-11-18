@@ -6,6 +6,7 @@ import edu.upenn.cis573.database.DBManager;
 import edu.upenn.cis573.datastructure.Room;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -150,7 +151,7 @@ public class HistoryTabDetails extends Fragment {
         
         //displays date of last reservation
         TextView lastReservation = (TextView) getView().findViewById(R.id.last_reservation_time);
-        lastReservation.setText(new Date(o.getDate()).toString());
+        lastReservation.setText(new Date(o.getStartDate()).toString());
         
         showNoteText = (EditText)getView().findViewById(R.id.note);
         showNoteText.setText(o.getNote());
@@ -159,12 +160,27 @@ public class HistoryTabDetails extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	String noteText = showNoteText.getText().toString();
+            	
             	Log.i("In history details page building name is: ", o.getBuildingName());
             	if(DBManager.updateDbWithSpecficEntry(o, noteText) == -1) {
             	    showClearHistoryDialog();
-            	};
+            	}
+            	showSaveDialog();
             }
         });
+    }
+    
+    public void showSaveDialog(){
+        AlertDialog.Builder builder = new Builder(getActivity());
+        builder.setMessage("Your note has been saved!");
+        builder.setTitle("Confirmation Dialog");
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();                           
+            }
+        });     
+        builder.create().show();
     }
     
     public void showClearHistoryDialog() {

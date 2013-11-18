@@ -11,7 +11,16 @@ public class DBHelper extends SQLiteOpenHelper{
     
     public  static final String TABLE_NAME                = "history";
     public  static final String COLUMN_NAME_ID            = "_id";
-    public  static final String COLUMN_NAME_DATE          = "date";
+    public  static final String COLUMN_NAME_STARTMIN    = "start_min";
+    public  static final String COLUMN_NAME_ENDMIN    = "end_min";
+    public  static final String COLUMN_NAME_STARTHOUR    = "start_hour";
+    public  static final String COLUMN_NAME_ENDHOUR    = "end_hour";
+    public  static final String COLUMN_NAME_STARTDATE    = "start_date";
+    public  static final String COLUMN_NAME_ENDDATE    = "end_date";
+    public  static final String COLUMN_NAME_MONTH    = "month";
+    public  static final String COLUMN_NAME_YEAR    = "year";
+    public  static final String COLUMN_NAME_GROUPSIZE    = "group_size";
+
     public  static final String COLUMN_NAME_BUILDINGNAME  = "buildingName";
     public  static final String COLUMN_NAME_SPACENAME     = "spaceName";
     public  static final String COLUMN_NAME_LATITUDE      = "latitude";
@@ -26,9 +35,6 @@ public class DBHelper extends SQLiteOpenHelper{
     public  static final String COLUMN_NAME_COMMENTS      = "comments";
     public  static final String COLUMN_NAME_ROOMNAME      = "roomName";
     public  static final String COLUMN_NAME_NOTE          = "notes";
-    public  static final String COLUMN_NAME_STARTTIME     = "startTime";
-    public  static final String COLUMN_NAME_ENDTIME       = "endTime";
-    
     
       
     public DBHelper(Context context) {  
@@ -38,10 +44,19 @@ public class DBHelper extends SQLiteOpenHelper{
   
     //The first time database has been created, onCreate will be called  
     @Override  
-    public void onCreate(SQLiteDatabase db) {  
+    public void onCreate(SQLiteDatabase db) { 
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + ";");
         db.execSQL("CREATE TABLE IF NOT EXISTS history(" +  
                 COLUMN_NAME_ID            + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                COLUMN_NAME_DATE          + " TEXT, " +
+                COLUMN_NAME_STARTMIN          + " INTEGER, " +
+                COLUMN_NAME_ENDMIN          + " INTEGER, " +
+                COLUMN_NAME_STARTHOUR          + " INTEGER, " +
+                COLUMN_NAME_ENDHOUR          + " INTEGER, " +
+                COLUMN_NAME_STARTDATE          + " INTEGER, " +
+                COLUMN_NAME_ENDDATE          + " INTEGER, " +
+                COLUMN_NAME_MONTH          + " INTEGER, " +
+                COLUMN_NAME_YEAR          + " INTEGER, " +  
+                COLUMN_NAME_GROUPSIZE          + " INTEGER, " +
                 COLUMN_NAME_BUILDINGNAME  + " TEXT, " +
                 COLUMN_NAME_SPACENAME     + " TEXT, " +
                 COLUMN_NAME_LATITUDE      + " REAL, " +
@@ -55,9 +70,8 @@ public class DBHelper extends SQLiteOpenHelper{
                 COLUMN_NAME_HASBIGSCREEN  + " INTEGER, " +
                 COLUMN_NAME_COMMENTS      + " TEXT, " +
                 COLUMN_NAME_ROOMNAME      + " TEXT, " +
-                COLUMN_NAME_STARTTIME     + " INTEGER, " +
-                COLUMN_NAME_ENDTIME       + " INTEGER, " +
-                COLUMN_NAME_NOTE      + " TEXT)");  
+                COLUMN_NAME_NOTE      + " TEXT) " 
+                + ";");  
     }  
   
     //If DATABASE_VERSION has been modified, system would find the difference of versions, onUpgrade would be called  

@@ -6,7 +6,6 @@ import edu.upenn.cis573.R;
 import edu.upenn.cis573.database.DBManager;
 import edu.upenn.cis573.datastructure.SearchOptions;
 import edu.upenn.cis573.util.ConnectionDetector;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -264,7 +263,7 @@ public class SearchActivity extends Activity {
             //this.showCurrentLocation();
             setResult(RESULT_OK, i);
             //ends this activity
-            this.finish();
+            finish();
             return;
         } else {
             cd.showAlertDialog(SearchActivity.this, "No Internet Connection",
@@ -566,21 +565,6 @@ public class SearchActivity extends Activity {
         // display the time in the text field
         updateDateText();
     }
-    
-    private static int getTime(TimePicker picker) {
-        int hour   = picker.getCurrentHour();
-        int minute = picker.getCurrentMinute();
-        String time = Integer.toString(hour) + Integer.toString(minute);
-        return Integer.parseInt(time);
-    }
-    
-    private static int getDate(DatePicker picker) {
-        int day   = picker.getDayOfMonth();
-        int month = picker.getMonth();
-        int year = picker.getYear();
-        String date = Integer.toString(year) + Integer.toString(month) + Integer.toString(day);
-        return Integer.parseInt(date);
-    }
 
     private static String pad(int c) {
         if (c >= 10)
@@ -622,7 +606,6 @@ public class SearchActivity extends Activity {
         public void onClick(View view) {
             mCurrentDialog.cancel();
             mCurrentDialog = null;
-            int startTime = getTime(startTimePicker);
         }
     };
 
@@ -631,7 +614,6 @@ public class SearchActivity extends Activity {
         public void onClick(View view) {
             mCurrentDialog.cancel();
             mCurrentDialog = null;
-            int endTime = getTime(endTimePicker);
         }
     };
 
@@ -640,7 +622,6 @@ public class SearchActivity extends Activity {
         public void onClick(View view) {
             mCurrentDialog.cancel();
             mCurrentDialog = null;
-            int date = getDate(datePicker);
         }
     };
 

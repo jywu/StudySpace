@@ -90,6 +90,7 @@
                     android:orientation="horizontal" >
 
                     <ImageView
+                        android:contentDescription="@string/computer_icon"
                         android:id="@+id/computer_icon_history"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
@@ -146,35 +147,43 @@
             android:layout_width="fill_parent"
             android:gravity="center"
             android:layout_height="wrap_content"
-            android:text="AVAILABLE NOW"
+            android:text="@string/available_now"
             android:textSize="30sp"
             android:textColor="@color/lightblue" />
         
         <!-- THIS TEXT VIEW IS FOR NOTES -->
 
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:layout_width="302dp"
+            android:layout_height="202dp"
+            android:orientation="horizontal"
+            android:layout_margin="2dp"
+            android:padding="2dp"
+            android:background="@color/lightgrey">
 
 	       <EditText
 	           android:id="@+id/note"
-	           android:layout_width="300dp"
+	           android:layout_margin="2dp"
+	           android:layout_width="0dp"
 	           android:layout_height="200dp"
-	           android:layout_marginTop="10dp"
-	           android:layout_weight="0.90"
+	           android:layout_weight="0.5"
+	           android:textCursorDrawable="@null"
+	           android:cursorVisible="true"
 	           android:background="@color/white"
 	           android:orientation="horizontal"
 	            android:gravity="top"
-	           android:text="Edit notes here:"
-	           android:textColor="@android:color/black"/>
+	           android:textColor="@android:color/black"
+	           android:hint="@string/add_notes_here"
+	           />
         </LinearLayout>
         
         <Button
             android:id="@+id/savenote1"
             android:layout_width="100dp"
             android:layout_height="48dp"
-            android:text="Save" />
+            android:background="@color/lightblue"
+            android:layout_margin="2dp"
+            android:text="@string/save" />
         
     </LinearLayout>
 

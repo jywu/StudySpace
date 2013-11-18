@@ -33,7 +33,6 @@ public class HistoryListActivity extends ListActivity{
 
     private Button clearHistoryButton;
     private TextView searchButton;
-    private ImageView statsButton;
     private ArrayList<StudySpace> historyList;
     private HistoryListAdapter historyListAdapter;
     
@@ -146,14 +145,15 @@ public class HistoryListActivity extends ListActivity{
     private class HistoryListAdapter extends ArrayAdapter<StudySpace> {
 
         private ArrayList<StudySpace> list_items;
-        private ArrayList<StudySpace> orig_items;
+        //private ArrayList<StudySpace> orig_items;
         private ArrayList<StudySpace> before_search;
 
+        @SuppressWarnings("unchecked")
         public HistoryListAdapter(Context context, int textViewResourceId,
                 ArrayList<StudySpace> items) {
             super(context, textViewResourceId, items);
             list_items = items;
-            orig_items = items;
+            //orig_items = items;
             before_search = (ArrayList<StudySpace>) list_items.clone();
         }
 

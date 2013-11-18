@@ -1,17 +1,9 @@
 package edu.upenn.cis573;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import edu.upenn.cis573.database.DBManager;
 
 public class Stats extends Activity {
@@ -21,8 +13,9 @@ public class Stats extends Activity {
     private int[] buildingStats;
     private int[] timeStats;
     private int[] dayStats;
-    private int averageGroupSize;
-    private int averageHours;
+    private double averageGroupSize;
+    private double averageHours;
+    private double hours;
     private String result;
 
     public Stats() {
@@ -46,6 +39,7 @@ public class Stats extends Activity {
         totalNum = 0;
         averageGroupSize = 0;
         averageHours = 0;
+        hours = 0.0;
 
         buildingStats = new int[4]; //Engineering, Wharton, Library, Others
         for(int i = 0; i < buildingStats.length; i++)
@@ -66,7 +60,11 @@ public class Stats extends Activity {
     }
 
     private void generateResult() {
+        DecimalFormat df = new DecimalFormat("#.##");
         result = "Total number of reservation: " + totalNum + "\n"
+                + "Total hours of meeting: " + hours + "\n"
+                + "Average hours of meeting: " + df.format(averageHours) + "\n"
+                + "Average meeting group size: " + df.format(averageGroupSize) + "\n"                
                 + "Number of reservations in building: \n"
                 + "\tEngineering: " + buildingStats[0] + "\n"
                 + "\tWharton: " + buildingStats[1] + "\n"
@@ -75,21 +73,20 @@ public class Stats extends Activity {
     }
 
     private void getStats() {
-        getTotalNum();
-        int hours = 0;
+        totalNum = getTotalNum();
         int groupSize = 0;
         for(StudySpace history: histories) {
             getBuildingStats(history.getBuildingType());
-            //hours += history.getHours();
-            //groupSize += history.getGroupSize();
+            hours += getHours(history);
+            groupSize += 0.0 + history.getGroupSize();
 
         }
         if(totalNum == 0) {
             averageGroupSize = 0;
             averageHours = 0;
         }else {
-            averageGroupSize  = groupSize / totalNum;
-            averageHours = hours / totalNum;
+            averageGroupSize  = groupSize * 1.0 / totalNum;
+            averageHours = hours * 1.0 / totalNum;
         }
     }
 
@@ -108,14 +105,20 @@ public class Stats extends Activity {
             ++buildingStats[3];
     }
 
-    private void getTimeStats() {
-    }
-
-    private void getDayStats() {
-    }
-
-    private int getAverageHours() {
-        return -1;
+    private double getHours(StudySpace history) {
+        int startDate = history.getStartDate();
+        int endDate = history.getEndDate();
+        int startHour = history.getStartHour();
+        int endHour = history.getEndHour();
+        int startMin = history.getStartMin();
+        int endMin = history.getEndMin();
+        
+        int diffDays = endDate - startDate;
+        int diffHours = endHour - startHour;
+        int diffMins = endMin - startMin;
+        
+        int duration = diffDays * 24 + diffHours + diffMins / 60;
+        return duration;
     }
 
 
