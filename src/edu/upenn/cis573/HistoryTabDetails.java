@@ -199,6 +199,9 @@ public class HistoryTabDetails extends Fragment {
                     .show();
                 }else {
                     DBManager.clearDB();
+                    Intent i = new Intent(currContext, SearchActivity.class);
+                    startActivityForResult(i,
+                            StudySpaceListActivity.ACTIVITY_SearchActivity);
                     ((Activity)currContext).finish();
                 }
             }

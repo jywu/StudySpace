@@ -147,14 +147,15 @@ public class DBManager {
 
         int rowsAffected = 0;
         String[] args = {studySpace.getBuildingName(), studySpace.getSpaceName(), String.valueOf(studySpace.getStartDate())}; 
-        if(spaceUsed() + noteText.length() > MAX_NOTE_SIZE) {
+        String oldNote = query(studySpace);
+        if(spaceUsed() - oldNote.length() + noteText.length() > MAX_NOTE_SIZE) {
             Log.i("DATABASE", "Database is full."); 
             return -1;
         }else {
             rowsAffected = db.update(DBHelper.TABLE_NAME, values, "buildingName=? and spaceName = ? and start_date = ?", args);    
         }
         return rowsAffected;
-    }  
+    } 
 
 
     /** 
