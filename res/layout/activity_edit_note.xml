@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -46,16 +47,29 @@
             android:onClick="onSaveNote"/>
              
             <Button
-            android:id="@+id/cancelbutton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Discard" 
-            android:onClick="onCancelNote"/>
+	            android:id="@+id/cancelbutton"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="Discard" 
+	            android:onClick="onCancelNote"/>
             
-        </LinearLayout>
-
-       
+            <Button
+	            android:id="@+id/recordbutton"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="Record Audio" 
+	            android:onClick="onRecord"/>
+                    
+             <fragment
+       	android:name="edu.upenn.cis573.AudioRecording" 
+      	android:id="@+id/fragment_container_recorder"
+      	android:layout_width="wrap_content"
+      	android:layout_height="wrap_content" />
+        </LinearLayout>  
     </LinearLayout>
-  
+
+   
+
 </ScrollView>
