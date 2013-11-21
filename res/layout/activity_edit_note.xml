@@ -61,6 +61,8 @@
 	            android:layout_weight="1"
 	            android:text="Record Audio" 
 	            android:onClick="onRecord"/>
+            
+            
                     
              <fragment
        	android:name="edu.upenn.cis573.AudioRecording" 
