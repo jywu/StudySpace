@@ -1,7 +1,14 @@
 package edu.upenn.cis573;
 
+import java.io.IOException;
+
+import edu.upenn.cis573.AudioRecording.PlayButton;
+import edu.upenn.cis573.AudioRecording.RecordButton;
 import edu.upenn.cis573.database.DBManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -18,12 +25,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class EditNoteActivity extends FragmentActivity {
+public class EditNoteActivity extends Activity {
 
     Button saveButton;
     EditText  editNoteText;
     StudySpace history;
-    AudioRecording audioRecording;
+    
+    private static String mFileName = null;
+    private MediaRecorder mRecorder = null;
+    private MediaPlayer   mPlayer = null;
+    
+    private boolean mStartRecording = true;
+    private boolean mStartPlaying = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +53,118 @@ public class EditNoteActivity extends FragmentActivity {
             editNoteText.setEnabled(false);
             saveButton.setEnabled(false);
             editNoteText.setText(text);
-        }	   
+        }
+        
+        //initialize fields for audio recording
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        //mFileName += "/audiorecordtest.3gp";
+        mFileName += "/" + DBManager.makeAudioFileName();
+        
+        //attach listener to audio buttons
+        final Button record = (Button) findViewById(R.id.record_button);
+        record.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                System.out.println("Record button clicked!");
+                onRecord(mStartRecording);
+                if (mStartRecording) {
+                    record.setText("Stop recording");
+                } else {
+                    record.setText("Record");
+                }
+                mStartRecording = !mStartRecording;
+            }
+        });
+        
+        final Button play = (Button) findViewById(R.id.play_button);
+        play.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                onPlay(mStartPlaying);
+                if (mStartPlaying) {
+                    play.setText("Stop playing");
+                } else {
+                    play.setText("Play");
+                }
+                mStartPlaying = !mStartPlaying;
+            }
+        });
+        
 
     }
     
+    /*
+     * Methods for audio recording 
+     */   
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mRecorder != null) {
+            mRecorder.release();
+            mRecorder = null;
+        }
 
+        if (mPlayer != null) {
+            mPlayer.release();
+            mPlayer = null;
+        }
+    }
+    
+    private void onRecord(boolean start) {
+        if (start) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+    
+    private void onPlay(boolean start) {
+        if (start) {
+            startPlaying();
+        } else {
+            stopPlaying();
+        }
+    }
 
+    private void startPlaying() {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(mFileName);
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            Log.e(null, "Audio playing prepare() failed");
+        }
+    }
+
+    private void stopPlaying() {
+        mPlayer.release();
+        mPlayer = null;
+    }
+
+    private void startRecording() {
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFile(mFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(null, "Audio recording prepare() failed");
+        }
+
+        mRecorder.start();
+    }
+
+    private void stopRecording() {
+        mRecorder.stop();
+        mRecorder.release();
+        mRecorder = null;
+    }
+    
+    /*
+     * Methods for note editing and saving
+     */
     public void onSaveNote(View view){
         Log.v("EditText", editNoteText.getText().toString());
         String noteText = editNoteText.getText().toString();
@@ -55,14 +174,6 @@ public class EditNoteActivity extends FragmentActivity {
 
     public void onCancelNote(View view){
         ((Activity)this).finish();
-    }
-
-
-    public void onRecord(View view){
-    	 audioRecording = new AudioRecording();
-    	 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-         transaction.replace(R.id.fragment_container_recorder, audioRecording);
-         transaction.commit();
     }
 
     public void showSaveDialog(){
@@ -114,7 +225,5 @@ public class EditNoteActivity extends FragmentActivity {
             }
         })
         .show();
-
-
     }
 }

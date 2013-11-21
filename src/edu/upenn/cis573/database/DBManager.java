@@ -22,9 +22,8 @@ public class DBManager {
     public static void initDB(Context context) {
         helper = new DBHelper(context);         
         db = helper.getWritableDatabase(); 
-
     }
-    
+
 
     /**
      * Adds new StudySpace entry to the database.
@@ -68,9 +67,27 @@ public class DBManager {
                     history.getBuildingName() + "space name is: " + history.getSpaceName());
             return 1;
         }
-    }  
+    } 
 
+    
+    public static String makeAudioFileName() {
+        Cursor c = queryTheCursor(true);
+        c.moveToFirst();
+        Long min = c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_STARTMIN));
+        Long hour = c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_STARTHOUR));
+        Long date = c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_STARTDATE));
+        Long month = c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_MONTH));
+        Long year = c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_YEAR));
 
+        String filename =  year.toString() + "-"
+                + month.toString() + "-"
+                + date.toString() + "_"
+                + hour.toString() + "-"
+                + min.toString() + ".3gp";
+        c.close();
+        return filename;
+    }
+    
 
     public static int updateDb(String noteText){  
 
@@ -116,7 +133,7 @@ public class DBManager {
         }
         return rowsAffected;
     }  
-    
+
     public static int updateDbWithSpecficEntry(StudySpace studySpace, String noteText){  
 
         ContentValues values = new ContentValues();
@@ -169,7 +186,7 @@ public class DBManager {
 
         while (!c.isAfterLast()) {  
             StudySpace history = new StudySpace(); 
-            
+
             history.setStartMin(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_STARTMIN)));
             history.setEndMin(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_ENDMIN)));
             history.setStartHour(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_STARTHOUR)));
@@ -179,7 +196,7 @@ public class DBManager {
             history.setMonth(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_MONTH)));
             history.setYear(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_YEAR)));
             history.setGroupSize(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_GROUPSIZE)));
-            
+
             history.setBuildingName(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_BUILDINGNAME)));
             history.setSpaceName(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_SPACENAME)));
             history.setLatitude(c.getDouble(c.getColumnIndex(DBHelper.COLUMN_NAME_LATITUDE)));
@@ -243,7 +260,7 @@ public class DBManager {
     public static void clearDB() {
         db.execSQL("DELETE FROM " + DBHelper.TABLE_NAME);
     }
-    
+
     /**
      * The total length (in char) of all notes.
      * @return The total length (in char) of all notes.
@@ -290,6 +307,6 @@ public class DBManager {
     private static boolean parseBoolean(int b) {
         return b == 1;
     }
-    
+
 
 }
