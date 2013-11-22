@@ -16,8 +16,8 @@ public class DBManager {
     private static DBHelper helper;
     private static SQLiteDatabase db;
 
-    private static int MAX_NOTE_SIZE = 5; //max number of characters
-    private static int MAX_ENTRY_NUM = 3; //max number of history entries
+    private static int MAX_NOTE_SIZE = 1000; //max number of characters
+    private static int MAX_ENTRY_NUM = 1000; //max number of history entries
 
     public static void initDB(Context context) {
         helper = new DBHelper(context);         
@@ -86,6 +86,22 @@ public class DBManager {
                 + min.toString() + ".3gp";
         c.close();
         return filename;
+    }
+    
+    public static String getFirstEntryNote(){
+    	Cursor c = queryTheCursor(true);
+        c.moveToFirst();
+        
+        return c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_NOTE));
+    }
+    
+    public static String getSpecificEntryNote(StudySpace studySpace){
+    	Cursor c = db.rawQuery(
+                "SELECT notes FROM " + DBHelper.TABLE_NAME +
+                " where buildingName = \"" + studySpace.getBuildingName() + "\" and spaceName = \""+ studySpace.getSpaceName() 
+                + "\" and start_date = "+studySpace.getStartDate() + ";", null);
+    	c.moveToFirst();
+    	return c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_NOTE));
     }
     
 

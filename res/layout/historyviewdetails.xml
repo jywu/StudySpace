@@ -67,7 +67,7 @@
                 android:onClick="onMapClickHistory" />
         </LinearLayout>
     </LinearLayout>
-
+    
     <fragment
         android:id="@+id/fragment_container_history"
         android:layout_above="@id/footer"

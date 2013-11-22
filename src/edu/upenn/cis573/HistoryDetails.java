@@ -1,15 +1,22 @@
 package edu.upenn.cis573;
 
 import java.util.ArrayList;
+
+import edu.upenn.cis573.database.DBManager;
 import edu.upenn.cis573.util.ConnectionDetector;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class HistoryDetails extends FragmentActivity {
 
@@ -55,6 +62,7 @@ public class HistoryDetails extends FragmentActivity {
             cd.showAlertDialog(HistoryDetails.this, "No Internet Connection",
                     "You don't have internet connection.", false);
         }
+
     }
 
     public void onDetailsClickHistory(View v) {
@@ -100,5 +108,6 @@ public class HistoryDetails extends FragmentActivity {
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
+    
 
 }

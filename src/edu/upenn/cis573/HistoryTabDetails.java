@@ -1,5 +1,6 @@
 package edu.upenn.cis573;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import edu.upenn.cis573.database.DBManager;
@@ -7,12 +8,14 @@ import edu.upenn.cis573.datastructure.Room;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,13 +23,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class HistoryTabDetails extends Fragment {
     private StudySpace o;
     private EditText showNoteText;
 
+    TextView txtText;
+    ImageButton btnSpeak;
+    protected static final int RESULT_SPEECH = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -169,6 +177,33 @@ public class HistoryTabDetails extends Fragment {
                 }
             }
         });
+        
+        txtText = (TextView) getView().findViewById(R.id.txtText2);
+
+ 		btnSpeak = (ImageButton) getView().findViewById(R.id.btnSpeak2);
+
+ 		btnSpeak.setOnClickListener(new View.OnClickListener() {
+
+ 			@Override
+ 			public void onClick(View v) {
+
+ 				Intent intent = new Intent(
+ 						RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+ 				intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+
+ 				try {
+ 					startActivityForResult(intent, RESULT_SPEECH);
+ 					txtText.setText("");
+ 				} catch (ActivityNotFoundException a) {
+// 					Toast t = Toast.makeText(getApplicationContext(),
+// 							"Ops! Your device doesn't support Speech to Text",
+// 							Toast.LENGTH_SHORT);
+// 					t.show();
+ 				}
+ 			}
+ 		});
+        
     }
 
     public void showSaveDialog(){
@@ -214,5 +249,26 @@ public class HistoryTabDetails extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }
+   
+    @Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+		case RESULT_SPEECH: {
+			if (resultCode == -1 && null != data) {
+
+				ArrayList<String> text = data
+						.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+				showNoteText.setText(DBManager.getSpecificEntryNote(o)+ " "+ text.get(0));
+				//showNoteText.setText(text.get(0));
+			}
+			break;
+		}
+
+		}
+	}
+  
 
 }

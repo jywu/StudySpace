@@ -1,9 +1,9 @@
 package edu.upenn.cis573;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-import edu.upenn.cis573.AudioRecording.PlayButton;
-import edu.upenn.cis573.AudioRecording.RecordButton;
+
 import edu.upenn.cis573.database.DBManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -12,10 +12,12 @@ import android.os.Environment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -24,13 +26,19 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class EditNoteActivity extends Activity {
 
     Button saveButton;
     EditText  editNoteText;
     StudySpace history;
+    TextView txtText;
+    ImageButton btnSpeak;
     
+    protected static final int RESULT_SPEECH = 1;
     private static String mFileName = null;
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
@@ -88,7 +96,31 @@ public class EditNoteActivity extends Activity {
             }
         });
         
+        txtText = (TextView) findViewById(R.id.txtText);
 
+		btnSpeak = (ImageButton) findViewById(R.id.btnSpeak);
+
+		btnSpeak.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				Intent intent = new Intent(
+						RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+				intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+
+				try {
+					startActivityForResult(intent, RESULT_SPEECH);
+					txtText.setText("");
+				} catch (ActivityNotFoundException a) {
+					Toast t = Toast.makeText(getApplicationContext(),
+							"Ops! Your device doesn't support Speech to Text",
+							Toast.LENGTH_SHORT);
+					t.show();
+				}
+			}
+		});
     }
     
     /*
@@ -226,4 +258,31 @@ public class EditNoteActivity extends Activity {
         })
         .show();
     }
+ /*   
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.speech_to_text, menu);
+		return true;
+	}
+*/
+    
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+		case RESULT_SPEECH: {
+			if (resultCode == RESULT_OK && null != data) {
+
+				ArrayList<String> text = data
+						.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+				editNoteText.setText(DBManager.getFirstEntryNote()+ " "+ text.get(0));
+			}
+			break;
+		}
+
+		}
+	}
+    
 }
