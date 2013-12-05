@@ -8,6 +8,11 @@
         android:minSdkVersion="15"
         android:targetSdkVersion="18" />
 
+     <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -114,6 +119,10 @@
         <activity
             android:name="edu.upenn.cis573.EditNoteActivity"
             android:label="@string/title_activity_edit_note" >
+        </activity>
+        
+        <activity
+            android:name="edu.upenn.cis573.CameraActivity" >
         </activity>
     </application>
 

@@ -1,6 +1,10 @@
 package edu.upenn.cis573;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 
@@ -17,6 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.graphics.Bitmap;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,6 +32,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,12 +45,14 @@ public class EditNoteActivity extends Activity {
     ImageButton btnSpeak;
     
     protected static final int RESULT_SPEECH = 1;
+    protected static final int CAMERA_PIC_REQUEST = 2;
     private static String mFileName = null;
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
     
     private boolean mStartRecording = true;
     private boolean mStartPlaying = true;
+    ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +61,8 @@ public class EditNoteActivity extends Activity {
         // check if this is a new note or just showing a saved note
         saveButton = (Button)findViewById(R.id.savebutton);
         editNoteText  = (EditText)findViewById(R.id.editnote1);
-
+        image = (ImageView)findViewById(R.id.camerapicture);
+        
         Bundle extras = getIntent().getExtras();		
         if(extras != null) {
             String text = extras.getString("NOTE_TEXT");
@@ -122,6 +131,8 @@ public class EditNoteActivity extends Activity {
 			}
 		});
     }
+    
+    
     
     /*
      * Methods for audio recording 
@@ -203,6 +214,13 @@ public class EditNoteActivity extends Activity {
         if(addNoteToDB(noteText) == 1)
             showSaveDialog();	
     }
+    
+    public void onCamera(View view){
+    	//Intent intent = new Intent(this, CameraActivity.class);
+    	Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
+        startActivityForResult(intent, CAMERA_PIC_REQUEST);
+    	//startActivity(intent);
+    }
 
     public void onCancelNote(View view){
         ((Activity)this).finish();
@@ -222,7 +240,7 @@ public class EditNoteActivity extends Activity {
     }
 
     public int addNoteToDB(String noteText){
-        if(DBManager.updateDb(noteText) == -1) {
+        if(DBManager.updateDb(noteText, "") == -1) {
             showClearHistoryDialog();
             return -1;
         };
@@ -258,29 +276,53 @@ public class EditNoteActivity extends Activity {
         })
         .show();
     }
- /*   
-    @Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.speech_to_text, menu);
-		return true;
-	}
-*/
     
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-		case RESULT_SPEECH: {
-			if (resultCode == RESULT_OK && null != data) {
-
-				ArrayList<String> text = data
-						.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
-				editNoteText.setText(DBManager.getFirstEntryNote()+ " "+ text.get(0));
+			case RESULT_SPEECH: {
+				if (resultCode == RESULT_OK && null != data) {
+	
+					ArrayList<String> text = data
+							.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+	
+					editNoteText.setText(DBManager.getFirstEntryNote()+ " "+ text.get(0));
+				}
+				break;
 			}
-			break;
-		}
+			
+			case CAMERA_PIC_REQUEST:{
+				if(resultCode==RESULT_OK && resultCode == RESULT_OK && data != null){
+					FileOutputStream outStream = null;
+					String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+				    fileName += "/StudySpace/%d.jpg";
+					fileName = String.format(fileName, System.currentTimeMillis());
+					Log.i("path is: ", fileName);
+					
+					File photo = new File(fileName);
+					photo.getParentFile().mkdirs();
+					
+					Bundle b = data.getExtras();
+					Bitmap photos = (Bitmap)b.get("data");
+					ByteArrayOutputStream stream = new ByteArrayOutputStream();
+					photos.compress(Bitmap.CompressFormat.PNG, 100, stream);
+					
+					byte[] byteArray = stream.toByteArray();
+					//image.set
+					image.setImageBitmap(photos);
+					try {
+						outStream = new FileOutputStream(photo);
+						outStream.write(byteArray);
+						outStream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				
+				}
+				
+			}
 
 		}
 	}

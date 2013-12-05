@@ -32,15 +32,15 @@ public class DBManager {
     public static int add(StudySpace history) {
 
         ContentValues values = new ContentValues();
-        values.put(DBHelper.COLUMN_NAME_STARTMIN,          history.getStartMin());
-        values.put(DBHelper.COLUMN_NAME_ENDMIN,          history.getEndMin());
-        values.put(DBHelper.COLUMN_NAME_STARTHOUR,          history.getStartHour());
-        values.put(DBHelper.COLUMN_NAME_ENDHOUR,          history.getEndHour());
-        values.put(DBHelper.COLUMN_NAME_STARTDATE, history.getStartDate());
-        values.put(DBHelper.COLUMN_NAME_ENDDATE, history.getEndDate());
-        values.put(DBHelper.COLUMN_NAME_MONTH,          history.getMonth());
+        values.put(DBHelper.COLUMN_NAME_STARTMIN,      history.getStartMin());
+        values.put(DBHelper.COLUMN_NAME_ENDMIN,        history.getEndMin());
+        values.put(DBHelper.COLUMN_NAME_STARTHOUR,     history.getStartHour());
+        values.put(DBHelper.COLUMN_NAME_ENDHOUR,       history.getEndHour());
+        values.put(DBHelper.COLUMN_NAME_STARTDATE,     history.getStartDate());
+        values.put(DBHelper.COLUMN_NAME_ENDDATE,       history.getEndDate());
+        values.put(DBHelper.COLUMN_NAME_MONTH,         history.getMonth());
         values.put(DBHelper.COLUMN_NAME_YEAR,          history.getYear());
-        values.put(DBHelper.COLUMN_NAME_GROUPSIZE,          history.getGroupSize());
+        values.put(DBHelper.COLUMN_NAME_GROUPSIZE,     history.getGroupSize());
 
         values.put(DBHelper.COLUMN_NAME_BUILDINGNAME,  history.getBuildingName());
         values.put(DBHelper.COLUMN_NAME_SPACENAME,     history.getSpaceName());
@@ -55,7 +55,8 @@ public class DBManager {
         values.put(DBHelper.COLUMN_NAME_HASBIGSCREEN,  history.has_big_screen());
         values.put(DBHelper.COLUMN_NAME_COMMENTS,      history.getComments());
         values.put(DBHelper.COLUMN_NAME_ROOMNAME,      history.getRooms()[0].getRoomName());
-        values.put(DBHelper.COLUMN_NAME_NOTE,      "");
+        values.put(DBHelper.COLUMN_NAME_PHOTOPATH,     history.getPhotoPath());
+        values.put(DBHelper.COLUMN_NAME_NOTE,          "");
 
         // Insert the new row, returning the primary key value of the new row
         if(size() >= MAX_ENTRY_NUM) {
@@ -104,8 +105,9 @@ public class DBManager {
     	return c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_NOTE));
     }
     
-
-    public static int updateDb(String noteText){  
+  
+    
+    public static int updateDb(String noteText, String photoPath){  
 
         Cursor c = queryTheCursor(true);
         c.moveToFirst();
@@ -137,7 +139,16 @@ public class DBManager {
         values.put(DBHelper.COLUMN_NAME_HASBIGSCREEN,  parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASBIGSCREEN))));
         values.put(DBHelper.COLUMN_NAME_COMMENTS,      c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_COMMENTS)));
         values.put(DBHelper.COLUMN_NAME_ROOMNAME,      new Room[] {new Room(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_ROOMNAME)))}[0].getRoomName());
-        values.put(DBHelper.COLUMN_NAME_NOTE,     noteText);
+        
+        if(!photoPath.isEmpty())
+        	values.put(DBHelper.COLUMN_NAME_PHOTOPATH, photoPath);
+        else
+        	values.put(DBHelper.COLUMN_NAME_PHOTOPATH,     c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_PHOTOPATH)));
+        
+        if(!noteText.isEmpty())
+        	values.put(DBHelper.COLUMN_NAME_NOTE,          noteText);
+        else
+        	values.put(DBHelper.COLUMN_NAME_NOTE,     c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_NOTE)));
 
         int rowsAffected = 0;
         String[] args = {String.valueOf(c.getLong(c.getColumnIndex(DBHelper.COLUMN_NAME_ID)))}; 
@@ -160,9 +171,9 @@ public class DBManager {
         values.put(DBHelper.COLUMN_NAME_ENDHOUR,          studySpace.getEndHour());
         values.put(DBHelper.COLUMN_NAME_STARTDATE,          studySpace.getStartDate());
         values.put(DBHelper.COLUMN_NAME_ENDDATE,          studySpace.getEndDate());
-        values.put(DBHelper.COLUMN_NAME_MONTH,          studySpace.getMonth());
+        values.put(DBHelper.COLUMN_NAME_MONTH,         studySpace.getMonth());
         values.put(DBHelper.COLUMN_NAME_YEAR,          studySpace.getYear());
-        values.put(DBHelper.COLUMN_NAME_GROUPSIZE,          studySpace.getGroupSize());
+        values.put(DBHelper.COLUMN_NAME_GROUPSIZE,     studySpace.getGroupSize());
         values.put(DBHelper.COLUMN_NAME_BUILDINGNAME,  studySpace.getBuildingName());
         values.put(DBHelper.COLUMN_NAME_SPACENAME,     studySpace.getSpaceName());
         values.put(DBHelper.COLUMN_NAME_LATITUDE,      studySpace.getSpaceLatitude());
@@ -176,7 +187,7 @@ public class DBManager {
         values.put(DBHelper.COLUMN_NAME_HASBIGSCREEN,  studySpace.has_big_screen());
         values.put(DBHelper.COLUMN_NAME_COMMENTS,      studySpace.getComments());
         values.put(DBHelper.COLUMN_NAME_ROOMNAME,      studySpace.getRooms()[0].getRoomName());
-        values.put(DBHelper.COLUMN_NAME_NOTE,     noteText);
+        values.put(DBHelper.COLUMN_NAME_NOTE,          noteText);
 
         int rowsAffected = 0;
         String[] args = {studySpace.getBuildingName(), studySpace.getSpaceName(), String.valueOf(studySpace.getStartDate())}; 

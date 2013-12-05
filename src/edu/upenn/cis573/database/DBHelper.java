@@ -35,6 +35,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public  static final String COLUMN_NAME_COMMENTS      = "comments";
     public  static final String COLUMN_NAME_ROOMNAME      = "roomName";
     public  static final String COLUMN_NAME_NOTE          = "notes";
+    public  static final String COLUMN_NAME_PHOTOPATH     = "photo_path";
     
       
     public DBHelper(Context context) {  
@@ -72,6 +73,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 COLUMN_NAME_HASBIGSCREEN  + " INTEGER, " +
                 COLUMN_NAME_COMMENTS      + " TEXT, " +
                 COLUMN_NAME_ROOMNAME      + " TEXT, " +
+                COLUMN_NAME_PHOTOPATH      + " TEXT, " +
                 COLUMN_NAME_NOTE      + " TEXT) " 
                 + ";");  
     }  

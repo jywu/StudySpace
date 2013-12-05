@@ -37,6 +37,7 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
     private boolean has_computer;
     private boolean has_big_screen;
     private Room[]  rooms;
+    private String photoPath;
     private String note;
       
     private Date completeStartTime = new Date();
@@ -380,5 +381,13 @@ public class StudySpace implements Serializable, Comparable<StudySpace> {
             return OTHER;
         }
     }
+
+	public String getPhotoPath() {
+		return photoPath;
+	}
+
+	public void setPhotoPath(String photoPath) {
+		this.photoPath = photoPath;
+	}
 
 }
