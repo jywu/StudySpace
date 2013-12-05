@@ -203,6 +203,13 @@
 		        android:layout_marginTop="10dp"
 		        android:contentDescription="speak"
 		        android:src="@android:drawable/ic_btn_speak_now" />
+		    
+		    
+		    <ImageView
+	            android:id="@+id/camerapicture2"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:adjustViewBounds="true"/>
 		 
 		    <TextView
 		        android:id="@+id/txtText2"

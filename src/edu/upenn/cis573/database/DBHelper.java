@@ -34,9 +34,8 @@ public class DBHelper extends SQLiteOpenHelper{
     public  static final String COLUMN_NAME_HASBIGSCREEN  = "has_big_screen";
     public  static final String COLUMN_NAME_COMMENTS      = "comments";
     public  static final String COLUMN_NAME_ROOMNAME      = "roomName";
-    public  static final String COLUMN_NAME_NOTE          = "notes";
     public  static final String COLUMN_NAME_PHOTOPATH     = "photo_path";
-    
+    public  static final String COLUMN_NAME_NOTE          = "notes";    
       
     public DBHelper(Context context) {  
         //CursorFactory is set to null, as default  

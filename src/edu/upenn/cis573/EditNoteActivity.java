@@ -43,6 +43,7 @@ public class EditNoteActivity extends Activity {
     StudySpace history;
     TextView txtText;
     ImageButton btnSpeak;
+    String fileName = "";
     
     protected static final int RESULT_SPEECH = 1;
     protected static final int CAMERA_PIC_REQUEST = 2;
@@ -211,8 +212,9 @@ public class EditNoteActivity extends Activity {
     public void onSaveNote(View view){
         Log.v("EditText", editNoteText.getText().toString());
         String noteText = editNoteText.getText().toString();
-        if(addNoteToDB(noteText) == 1)
-            showSaveDialog();	
+        
+      	if(addNoteAndPhotoToDB(noteText, fileName))
+      		showSaveDialog();	
     }
     
     public void onCamera(View view){
@@ -239,12 +241,12 @@ public class EditNoteActivity extends Activity {
         builder.create().show();
     }
 
-    public int addNoteToDB(String noteText){
-        if(DBManager.updateDb(noteText, "") == -1) {
+    public boolean addNoteAndPhotoToDB(String noteText, String photoPath){
+        if(DBManager.updateDb(noteText, photoPath) == -1) {
             showClearHistoryDialog();
-            return -1;
-        };
-        return 1;
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -296,7 +298,7 @@ public class EditNoteActivity extends Activity {
 			case CAMERA_PIC_REQUEST:{
 				if(resultCode==RESULT_OK && resultCode == RESULT_OK && data != null){
 					FileOutputStream outStream = null;
-					String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+					fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 				    fileName += "/StudySpace/%d.jpg";
 					fileName = String.format(fileName, System.currentTimeMillis());
 					Log.i("path is: ", fileName);

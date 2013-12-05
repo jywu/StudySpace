@@ -237,6 +237,7 @@ public class DBManager {
             history.setHas_big_screen(parseBoolean(c.getInt(c.getColumnIndex(DBHelper.COLUMN_NAME_HASBIGSCREEN))));
             history.setComments(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_COMMENTS)));
             history.setRooms(new Room[] {new Room(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_ROOMNAME)))});
+            history.setPhotoPath(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_PHOTOPATH)));
             history.setNote(c.getString(c.getColumnIndex(DBHelper.COLUMN_NAME_NOTE)));
             histories.add(history);
             c.moveToNext();

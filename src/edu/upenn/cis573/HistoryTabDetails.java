@@ -1,19 +1,24 @@
 package edu.upenn.cis573;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import edu.upenn.cis573.database.DBManager;
-import edu.upenn.cis573.datastructure.Room;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
@@ -26,7 +31,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+import edu.upenn.cis573.database.DBManager;
+import edu.upenn.cis573.datastructure.Room;
 
 public class HistoryTabDetails extends Fragment {
     private StudySpace o;
@@ -34,6 +40,7 @@ public class HistoryTabDetails extends Fragment {
 
     TextView txtText;
     ImageButton btnSpeak;
+    ImageView photoImage;
     protected static final int RESULT_SPEECH = 1;
 
     @Override
@@ -181,7 +188,13 @@ public class HistoryTabDetails extends Fragment {
         txtText = (TextView) getView().findViewById(R.id.txtText2);
 
  		btnSpeak = (ImageButton) getView().findViewById(R.id.btnSpeak2);
-
+ 		photoImage = (ImageView)getView().findViewById(R.id.camerapicture2);
+ 		String path = o.getPhotoPath();
+ 		byte[] byteArray = readPictureFromFile(path);
+ 
+ 		Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+ 		photoImage.setImageBitmap(bitmap);
+ 		
  		btnSpeak.setOnClickListener(new View.OnClickListener() {
 
  			@Override
@@ -196,14 +209,24 @@ public class HistoryTabDetails extends Fragment {
  					startActivityForResult(intent, RESULT_SPEECH);
  					txtText.setText("");
  				} catch (ActivityNotFoundException a) {
-// 					Toast t = Toast.makeText(getApplicationContext(),
-// 							"Ops! Your device doesn't support Speech to Text",
-// 							Toast.LENGTH_SHORT);
-// 					t.show();
  				}
  			}
  		});
         
+    }
+    
+    public byte[] readPictureFromFile(String path){
+    	File file = new File(path);
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     public void showSaveDialog(){
