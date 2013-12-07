@@ -177,13 +177,52 @@
 	           />
         </LinearLayout>
         
-        <Button
-            android:id="@+id/savenote1"
-            android:layout_width="100dp"
-            android:layout_height="48dp"
-            android:background="@color/lightblue"
-            android:layout_margin="2dp"
-            android:text="@string/save" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="horizontal" >
+        
+	        <Button
+	            android:id="@+id/savenote1"
+	            android:layout_width="150dp"
+	            android:layout_height="48dp"
+	            android:background="@color/lightblue"
+	            android:layout_margin="2dp"
+	            android:text="@string/save" />
+	        
+	        <Button
+	            android:id="@+id/takepic"
+	            android:layout_width="150dp"
+	            android:layout_height="48dp"
+	            android:background="@color/lightgreen"
+	            android:layout_margin="2dp"
+	            android:text="@string/takepic" />
+	       
+	     </LinearLayout>
+	     
+         <LinearLayout
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginLeft="10dp"
+           android:orientation="horizontal" >
+        
+	        <Button
+	            android:id="@+id/choosepic"
+	            android:layout_width="150dp"
+	            android:layout_height="48dp"
+	            android:background="@color/dullblue"
+	            android:layout_margin="2dp"
+	            android:text="@string/choosepic" />
+	        
+	       <Button
+	            android:id="@+id/deletepic"
+	            android:layout_width="150dp"
+	            android:layout_height="48dp"
+	            android:background="@color/brown"
+	            android:layout_margin="2dp"
+	            android:text="@string/deletepic" />
+        </LinearLayout>
         
         
         <LinearLayout 
@@ -196,10 +235,8 @@
 		 
 		    <ImageButton
 		        android:id="@+id/btnSpeak2"
-		        android:layout_width="fill_parent"
+		        android:layout_width="280dp"
 		        android:layout_height="wrap_content"
-		        android:layout_margin="10dp"
-		        android:layout_marginRight="10dp"
 		        android:layout_marginTop="10dp"
 		        android:contentDescription="speak"
 		        android:src="@android:drawable/ic_btn_speak_now" />

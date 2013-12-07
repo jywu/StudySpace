@@ -1,10 +1,13 @@
 package edu.upenn.cis573;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -17,9 +20,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -37,11 +44,18 @@ import edu.upenn.cis573.datastructure.Room;
 public class HistoryTabDetails extends Fragment {
     private StudySpace o;
     private EditText showNoteText;
+    private String noteText;
+    private Bitmap photos;
 
-    TextView txtText;
-    ImageButton btnSpeak;
-    ImageView photoImage;
-    protected static final int RESULT_SPEECH = 1;
+    private TextView txtText;
+    private ImageButton btnSpeak;
+    private ImageView photoImage;
+    private static final int RESULT_OK = -1;
+    private static final int RESULT_SPEECH = 1;
+    private static final int CAMERA_PIC_REQUEST = 2;
+    private static final int SELECT_PHOTO = 3;
+    String fileName;
+    
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -174,10 +188,10 @@ public class HistoryTabDetails extends Fragment {
         Button saveButton = (Button)getView().findViewById(R.id.savenote1);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String noteText = showNoteText.getText().toString();
+                noteText = showNoteText.getText().toString();
 
                 Log.i("In history details page building name is: ", o.getBuildingName());
-                if(DBManager.updateDbWithSpecficEntry(o, noteText) == -1) {
+                if(DBManager.updateDbWithSpecficEntry(o, noteText, fileName, false) == -1) {
                     showClearHistoryDialog();
                 }else {
                     showSaveDialog();
@@ -190,10 +204,18 @@ public class HistoryTabDetails extends Fragment {
  		btnSpeak = (ImageButton) getView().findViewById(R.id.btnSpeak2);
  		photoImage = (ImageView)getView().findViewById(R.id.camerapicture2);
  		String path = o.getPhotoPath();
- 		byte[] byteArray = readPictureFromFile(path);
- 
- 		Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
- 		photoImage.setImageBitmap(bitmap);
+ 		
+ 		if (path != null && !path.isEmpty()) {
+	 		byte[] byteArray = readPictureFromFile(path);
+	 
+	 		Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+	 		photoImage.setImageBitmap(bitmap);
+	 		
+ 		}
+ 		
+ 		else{
+ 			photoImage.setImageBitmap(null);
+ 		}
  		
  		btnSpeak.setOnClickListener(new View.OnClickListener() {
 
@@ -212,8 +234,82 @@ public class HistoryTabDetails extends Fragment {
  				}
  			}
  		});
-        
+ 		
+ 		
+ 		Button takePictureBtn = (Button)getView().findViewById(R.id.takepic);
+ 		takePictureBtn.setOnClickListener(new View.OnClickListener() {
+ 			@Override
+ 			public void onClick(View v) {
+ 				Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
+ 		        startActivityForResult(intent, CAMERA_PIC_REQUEST);
+ 			}
+ 		});
+ 		
+ 		Button choosePictureBtn = (Button)getView().findViewById(R.id.choosepic);
+ 		choosePictureBtn.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+		    	photoPickerIntent.setType("image/*");
+		    	startActivityForResult(photoPickerIntent, SELECT_PHOTO); 			
+			}
+		});
+ 		
+ 		Button deletePictureBtn = (Button)getView().findViewById(R.id.deletepic);
+ 		deletePictureBtn.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				Log.i("path: ", o.getPhotoPath());
+				Log.i("photos ", String.valueOf(photos == null));
+				if((o.getPhotoPath() == null || o.getPhotoPath().isEmpty()) && photos == null){					
+					showNoPicDialog();
+				}
+				else{
+					showDeleteConfirm(noteText);
+				}
+			}
+		});
     }
+
+    public void showNoPicDialog() {
+        new Builder(this.getActivity())
+        .setTitle("No Picture")
+        .setMessage("No picture assciated. Cannot delete!")
+        .show();
+    }
+    
+    public void showDeleteConfirm(String noteText) {
+        final Context currContext = this.getActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(currContext);
+        builder.setMessage("Are you sure to delete the picture?");
+        builder.setTitle("Delete picture");
+        builder.setNegativeButton("No", new OnClickListener() {
+         	 public void onClick(DialogInterface dialog, int which) {
+         		 
+         	 }
+       });
+        builder.setPositiveButton("Yes", new OnClickListener() {
+        	String note = "";
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            	DBManager.updateDbWithSpecficEntry(o, note, "", true);
+               
+                    new AlertDialog.Builder(currContext)
+                    .setTitle("Picture deleted")
+                    .setMessage("The picture is deleted!")
+                    .show();
+               
+                  //  ((Activity)currContext).finish();
+            }
+            
+            public OnClickListener setNoteText(String note){
+            	this.note = note;
+            	return this;
+            }
+        }.setNoteText(noteText)).show();
+      
+    }
+    
     
     public byte[] readPictureFromFile(String path){
     	File file = new File(path);
@@ -278,20 +374,78 @@ public class HistoryTabDetails extends Fragment {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-		case RESULT_SPEECH: {
-			if (resultCode == -1 && null != data) {
-
-				ArrayList<String> text = data
-						.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
-				showNoteText.setText(DBManager.getSpecificEntryNote(o)+ " "+ text.get(0));
-				//showNoteText.setText(text.get(0));
+			case RESULT_SPEECH: {
+				if (resultCode == RESULT_OK && null != data) {
+	
+					ArrayList<String> text = data
+							.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+	
+					showNoteText.setText(DBManager.getSpecificEntryNote(o)+ " "+ text.get(0));
+				}
+				break;
 			}
-			break;
-		}
 
+			case CAMERA_PIC_REQUEST:
+				if (resultCode == RESULT_OK && data != null){
+					FileOutputStream outStream = null;
+					fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+				    fileName += "/StudySpace/%d.jpg";
+					fileName = String.format(fileName, System.currentTimeMillis());
+					Log.i("path is: ", fileName);
+					
+					File photo = new File(fileName);
+					photo.getParentFile().mkdirs();
+					
+					Bundle b = data.getExtras();
+					photos = (Bitmap)b.get("data");
+					ByteArrayOutputStream stream = new ByteArrayOutputStream();
+					photos.compress(Bitmap.CompressFormat.PNG, 100, stream);
+					
+					byte[] byteArray = stream.toByteArray();
+			
+					photoImage.setImageBitmap(photos);
+					try {
+						outStream = new FileOutputStream(photo);
+						outStream.write(byteArray);
+						outStream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				
+				}
+				break;
+				
+		case SELECT_PHOTO: 
+	        if(resultCode == RESULT_OK && data != null){  
+	            Uri selectedImage = data.getData();
+	            fileName = getAbsolutePathFromURI(this.getActivity(), selectedImage);
+	            InputStream imageStream = null;
+				try {
+					imageStream = getActivity().getContentResolver().openInputStream(selectedImage);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	           
+				
+				photos = BitmapFactory.decodeStream(imageStream);
+				photoImage.setImageBitmap(photos);
+	        }	
 		}
 	}
   
+	public String getAbsolutePathFromURI(Context context, Uri contentUri) {
+		  Cursor cursor = null;
+		  try { 
+		    String[] proj = { MediaStore.Images.Media.DATA };
+		    cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+		    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		    cursor.moveToFirst();
+		    return cursor.getString(column_index);
+		  } finally {
+		    if (cursor != null) {
+		      cursor.close();
+		    }
+		  }
+	}
 
 }

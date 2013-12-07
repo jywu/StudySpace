@@ -161,7 +161,7 @@ public class DBManager {
         return rowsAffected;
     }  
 
-    public static int updateDbWithSpecficEntry(StudySpace studySpace, String noteText){  
+    public static int updateDbWithSpecficEntry(StudySpace studySpace, String noteText, String photoPath, boolean deletePhoto){  
 
         ContentValues values = new ContentValues();
 
@@ -187,12 +187,24 @@ public class DBManager {
         values.put(DBHelper.COLUMN_NAME_HASBIGSCREEN,  studySpace.has_big_screen());
         values.put(DBHelper.COLUMN_NAME_COMMENTS,      studySpace.getComments());
         values.put(DBHelper.COLUMN_NAME_ROOMNAME,      studySpace.getRooms()[0].getRoomName());
-        values.put(DBHelper.COLUMN_NAME_NOTE,          noteText);
+        
+        
+        if(photoPath != null && !photoPath.isEmpty())
+        	values.put(DBHelper.COLUMN_NAME_PHOTOPATH, photoPath);
+        else if(!deletePhoto)
+        	values.put(DBHelper.COLUMN_NAME_PHOTOPATH, studySpace.getPhotoPath());
+        else
+        	values.put(DBHelper.COLUMN_NAME_PHOTOPATH, "");
+        
+        if(noteText != null && !noteText.isEmpty())
+        	values.put(DBHelper.COLUMN_NAME_NOTE,          noteText);
+        else
+        	values.put(DBHelper.COLUMN_NAME_NOTE,     studySpace.getNote());
 
         int rowsAffected = 0;
         String[] args = {studySpace.getBuildingName(), studySpace.getSpaceName(), String.valueOf(studySpace.getStartDate())}; 
         String oldNote = query(studySpace);
-        if(spaceUsed() - oldNote.length() + noteText.length() > MAX_NOTE_SIZE) {
+        if(noteText != null && (spaceUsed() - oldNote.length() + noteText.length() > MAX_NOTE_SIZE)) {
             Log.i("DATABASE", "Database is full."); 
             return -1;
         }else {

@@ -2,30 +2,30 @@ package edu.upenn.cis573;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
 import java.util.ArrayList;
 
-
-import edu.upenn.cis573.database.DBManager;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.os.Bundle;
-import android.os.Environment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -35,6 +35,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.upenn.cis573.database.DBManager;
 
 public class EditNoteActivity extends Activity {
 
@@ -47,6 +48,7 @@ public class EditNoteActivity extends Activity {
     
     protected static final int RESULT_SPEECH = 1;
     protected static final int CAMERA_PIC_REQUEST = 2;
+    protected static final int SELECT_PHOTO = 3;
     private static String mFileName = null;
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
@@ -218,10 +220,14 @@ public class EditNoteActivity extends Activity {
     }
     
     public void onCamera(View view){
-    	//Intent intent = new Intent(this, CameraActivity.class);
     	Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
         startActivityForResult(intent, CAMERA_PIC_REQUEST);
-    	//startActivity(intent);
+    }
+    
+    public void onChoosePicture(View view){
+    	Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+    	photoPickerIntent.setType("image/*");
+    	startActivityForResult(photoPickerIntent, SELECT_PHOTO); 
     }
 
     public void onCancelNote(View view){
@@ -296,7 +302,7 @@ public class EditNoteActivity extends Activity {
 			}
 			
 			case CAMERA_PIC_REQUEST:{
-				if(resultCode==RESULT_OK && resultCode == RESULT_OK && data != null){
+				if (resultCode == RESULT_OK && data != null) {
 					FileOutputStream outStream = null;
 					fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 				    fileName += "/StudySpace/%d.jpg";
@@ -312,7 +318,6 @@ public class EditNoteActivity extends Activity {
 					photos.compress(Bitmap.CompressFormat.PNG, 100, stream);
 					
 					byte[] byteArray = stream.toByteArray();
-					//image.set
 					image.setImageBitmap(photos);
 					try {
 						outStream = new FileOutputStream(photo);
@@ -323,10 +328,40 @@ public class EditNoteActivity extends Activity {
 					}
 				
 				}
-				
+				break;
 			}
+			
+			case SELECT_PHOTO: {
+		        if(resultCode == RESULT_OK && data != null){  
+		            Uri selectedImage = data.getData();
+		            fileName = getAbsolutePathFromURI(this, selectedImage);
+		            InputStream imageStream = null;
+					try {
+						imageStream = getContentResolver().openInputStream(selectedImage);
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}	           
+		            image.setImageBitmap(BitmapFactory.decodeStream(imageStream));
+		        }
+		    }
 
 		}
+	}
+	
+	public String getAbsolutePathFromURI(Context context, Uri contentUri) {
+		  Cursor cursor = null;
+		  try { 
+		    String[] proj = { MediaStore.Images.Media.DATA };
+		    cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+		    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		    cursor.moveToFirst();
+		    return cursor.getString(column_index);
+		  } finally {
+		    if (cursor != null) {
+		      cursor.close();
+		    }
+		  }
 	}
     
 }

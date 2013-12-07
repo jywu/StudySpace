@@ -117,7 +117,15 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Camera" 
-                android:onClick="onCamera"/>     
+                android:onClick="onCamera"/>
+		     
+		     <Button
+                android:id="@+id/choosepicture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Choose Picture" 
+                android:onClick="onChoosePicture"/>
 		 
 		</LinearLayout>
 

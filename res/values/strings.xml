@@ -38,5 +38,8 @@
     <string name="computer_icon">computer_icon</string>
     <string name="last_reservation">Last reservation: </string>
     <string name="projector_icon">projector_icon</string>
+    <string name="takepic">Take Picture</string>
+    <string name="choosepic">Choose Picture</string>
+    <string name="deletepic">Delete Picture</string>
 
 </resources>

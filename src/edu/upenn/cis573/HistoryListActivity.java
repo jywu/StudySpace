@@ -96,7 +96,7 @@ public class HistoryListActivity extends ListActivity{
         .show();
     }
 
-    //XXX defines click behaviors for the MapView button
+    // defines click behaviors for the MapView button
     public void onMapViewClickHistory(View view) {
         System.out.println("MapView button clicked!");
         Intent i = new Intent(this, CustomBuildingMap.class);
